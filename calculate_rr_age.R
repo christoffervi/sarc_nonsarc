@@ -34,8 +34,8 @@ calculate_rr_age <-
                                                T~0),
                       event2= dplyr::if_else(is.na(event2),0,1))}
     else{data <- {{data}} %>%
-      dplyr::filter(event1==event2) %>%
       dplyr::select(event1 ={{event1}}, event2= {{event2}}) %>%
+    #  dplyr::filter(event1!=event2) %>%
       dplyr::mutate(event1= dplyr::case_when(event1<event2~1,
                                              is.na(event2)&!is.na(event1)~1,
                                              T~0),
