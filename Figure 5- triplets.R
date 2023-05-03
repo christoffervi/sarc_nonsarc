@@ -42,33 +42,6 @@ df_long <- df_long %>%
   ungroup() %>% select(sarc_status,pid,rank,previous_event,outcome,age)
 
 
-df_long %>% filter(sarc_status %in% c("SARC(-)", "SARC(+)") &
-                     previous_event!="share") %>% group_by(pid) %>% 
-  mutate(r= row_number()) %>% filter(r==1)
-
-df_long %>% 
-  filter(sarc_status %in% c("SARC(+)", "SARC(-)")) %>% 
-  
-  select(!previous_event) %>% 
-  pivot_wider(names_from = rank, values_from = c(outcome, age)) %>%
-  mutate(vuf1 = paste(outcome_1,outcome_2,age_1,age_2, sep = ";"),
-         vuf2 = paste(outcome_2,outcome_3,age_2,age_3, sep = ";"),
-         vuf3 = paste(outcome_3,outcome_4,age_3,age_4, sep = ";"),
-         vuf4 = paste(outcome_4,outcome_5,age_4,age_5, sep = ";"),
-         vuf5 = paste(outcome_5,outcome_6,age_5,age_6, sep = ";"),
-         vuf6 = paste(outcome_6,outcome_7,age_6,age_7, sep = ";"),
-         vuf7 = paste(outcome_7,outcome_8,age_7,age_8, sep = ";"),
-         vuf8 = paste(outcome_8,outcome_9,age_8,age_9, sep = ";"),
-         #         vuf9 = paste(outcome_9,outcome_10,age_9,age_10, sep = ";"),
-         #vuf10 = paste(outcome_10,outcome_11,age_11)
-  ) %>% #select(contains("vuf"))
-  pivot_longer(cols = contains("vuf")) %>% select(pid,sarc_status,value) %>% 
-  separate(col = value, into = c("source", "destination", "age1", "age2"),sep = ";") %>% 
-  mutate(across(c(age1, age2), ~as.numeric(.x)),
-         pair = paste(source,destination),
-         time_lag = age2-age1) %>% drop_na() %>% 
-  filter(time_lag <=5 & time_lag>0)
-
 #Diagnostic triplets
 triplets <-
   df_long %>% 

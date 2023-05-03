@@ -328,112 +328,112 @@ hf<-
 ########
 
 # create a long dataset with relevant event-variables to rank the timing of events 
-df_longneg <- dfneg %>% 
-  mutate(age_hcm = primary_diagnosis_age, # renaming variable
-         age_htxvad = pmin(age_vad, age_transplant, na.rm = T), #merging vad and HTX
-         age_af = age_arrhythmia_a_fib, # renaming af var
-         age_lvsd = pmin(age_lvef50, age_lvef35, na.rm = T),
-         age_vt = pmin(age_composite_v_arrhythmia, age_cardiac_arrest, na.rm = T), # a composite VT var including cardiac arrest
-         age_hf = pmin(age_lvsd,age_htxvad, age_composite_hf, age_nyha_hf, age_nyha_hf_systolic, na.rm = T),
-         age_hcm = case_when(is.na(age_hcm)~first_encounter_age,T~age_hcm)) %>% 
-  dplyr::select(pid,primary_diagnosis_age,
-                age_hcm, age_htn,age_obstruction,age_srt,
-                age_af , age_vt, age_syncope,  age_icd,
-                age_hf,#age_lvsd, age_nyha_hf, 
-                age_stroke,age_htxvad, age_death,
-                sarc_status,
-  ) %>% 
-  pivot_longer(cols = starts_with("age_"), 
-               names_to = "outcome",
-               values_to = "age") %>%
-  mutate(outcome = case_when(str_detect(outcome, "lvef")~"age_lvef50",
-                             str_detect(outcome, "age_vad")~"age_transplant",
-                             T~outcome)) %>% 
-  drop_na() %>% 
-  mutate(age = case_when(age==0~primary_diagnosis_age,
-                         T~age)) # remove rows with missing age values
-
-# group the dataset by patient ID and outcome, and calculate the rank of age within each group
-df_longneg <- df_longneg %>% 
-  group_by(pid) %>% 
-  mutate(rank = rank(age, ties.method = "first")) %>%
-  ungroup() %>% mutate(outcome = str_replace(outcome, "age_", "")) %>% 
-  group_by(pid) %>% arrange(pid,rank) %>% 
-  mutate(previous_event = ifelse(rank == 1, "share", lag(outcome))) %>% 
-  ungroup() %>% select(sarc_status,pid,rank,previous_event,outcome,age)
-
-edges_df_neg <- df_longneg %>% group_by(previous_event,rank, outcome) %>% 
-  summarise(n=n()) %>% ungroup() %>% arrange(rank,desc(n)) %>% 
-  mutate(from = paste(rank, previous_event, sep = "_"),
-         to = paste(rank+1, outcome, sep = "_")
-  )
-nodes_df_neg <- edges_df_neg %>%  dplyr::select(from,to) %>% 
-  pivot_longer(cols = everything(), values_to = "label") %>% 
-  dplyr::select(label) %>% unique() %>% 
-  mutate(source = row_number()-1,
-         name = str_remove(label, "[1234567890]"),
-         name = str_remove(name, "[0123456789]"),
-         name = str_remove(name, "_"))
-
-edges_df_neg <- edges_df_neg %>% 
-  left_join(nodes_df, by = c("from" = "label")) %>% 
-  left_join(rename(nodes_df, "target"="source"), by = c("to" = "label"))
-
-#######
-
-
-
-# create a long dataset with relevant event-variables to rank the timing of events 
-df_longpos <- dfpos %>% 
-  mutate(age_hcm = primary_diagnosis_age, # renaming variable
-         age_htxvad = pmin(age_vad, age_transplant, na.rm = T), #merging vad and HTX
-         age_af = age_arrhythmia_a_fib, # renaming af var
-         age_lvsd = pmin(age_lvef50, age_lvef35, na.rm = T),
-         age_vt = pmin(age_composite_v_arrhythmia, age_cardiac_arrest, na.rm = T), # a composite VT var including cardiac arrest
-         age_hf = pmin(age_lvsd,age_htxvad, age_composite_hf, age_nyha_hf, age_nyha_hf_systolic, na.rm = T),
-         age_hcm = case_when(is.na(age_hcm)~first_encounter_age,T~age_hcm)) %>% 
-  dplyr::select(pid,primary_diagnosis_age,
-                age_hcm, age_htn,age_obstruction,age_srt,
-                age_af , age_vt, age_syncope,  age_icd,
-                age_hf,#age_lvsd, age_nyha_hf, 
-                age_stroke,age_htxvad, age_death,
-                sarc_status,
-  ) %>% 
-  pivot_longer(cols = starts_with("age_"), 
-               names_to = "outcome",
-               values_to = "age") %>%
-  mutate(outcome = case_when(str_detect(outcome, "lvef")~"age_lvef50",
-                             str_detect(outcome, "age_vad")~"age_transplant",
-                             T~outcome)) %>% 
-  drop_na() %>% 
-  mutate(age = case_when(age==0~primary_diagnosis_age,
-                         T~age)) # remove rows with missing age values
-
-# group the dataset by patient ID and outcome, and calculate the rank of age within each group
-df_longpos <- df_longpos %>% 
-  group_by(pid) %>% 
-  mutate(rank = rank(age, ties.method = "first")) %>%
-  ungroup() %>% mutate(outcome = str_replace(outcome, "age_", "")) %>% 
-  group_by(pid) %>% arrange(pid,rank) %>% 
-  mutate(previous_event = ifelse(rank == 1, "share", lag(outcome))) %>% 
-  ungroup() %>% select(sarc_status,pid,rank,previous_event,outcome,age)
-
-edges_df_pos <- df_longpos %>% group_by(previous_event,rank, outcome) %>% 
-  summarise(n=n()) %>% ungroup() %>% arrange(rank,desc(n)) %>% 
-  mutate(from = paste(rank, previous_event, sep = "_"),
-         to = paste(rank+1, outcome, sep = "_")
-  )
-nodes_df_pos <- edges_df_pos %>%  dplyr::select(from,to) %>% 
-  pivot_longer(cols = everything(), values_to = "label") %>% 
-  dplyr::select(label) %>% unique() %>% 
-  mutate(source = row_number()-1,
-         name = str_remove(label, "[1234567890]"),
-         name = str_remove(name, "[0123456789]"),
-         name = str_remove(name, "_"))
-
-edges_df_pos <- edges_df_pos %>% 
-  left_join(nodes_df, by = c("from" = "label")) %>% 
-  left_join(rename(nodes_df, "target"="source"), by = c("to" = "label"))
+# df_longneg <- dfneg %>% 
+#   mutate(age_hcm = primary_diagnosis_age, # renaming variable
+#          age_htxvad = pmin(age_vad, age_transplant, na.rm = T), #merging vad and HTX
+#          age_af = age_arrhythmia_a_fib, # renaming af var
+#          age_lvsd = pmin(age_lvef50, age_lvef35, na.rm = T),
+#          age_vt = pmin(age_composite_v_arrhythmia, age_cardiac_arrest, na.rm = T), # a composite VT var including cardiac arrest
+#          age_hf = pmin(age_lvsd,age_htxvad, age_composite_hf, age_nyha_hf, age_nyha_hf_systolic, na.rm = T),
+#          age_hcm = case_when(is.na(age_hcm)~first_encounter_age,T~age_hcm)) %>% 
+#   dplyr::select(pid,primary_diagnosis_age,
+#                 age_hcm, age_htn,age_obstruction,age_srt,
+#                 age_af , age_vt, age_syncope,  age_icd,
+#                 age_hf,#age_lvsd, age_nyha_hf, 
+#                 age_stroke,age_htxvad, age_death,
+#                 sarc_status,
+#   ) %>% 
+#   pivot_longer(cols = starts_with("age_"), 
+#                names_to = "outcome",
+#                values_to = "age") %>%
+#   mutate(outcome = case_when(str_detect(outcome, "lvef")~"age_lvef50",
+#                              str_detect(outcome, "age_vad")~"age_transplant",
+#                              T~outcome)) %>% 
+#   drop_na() %>% 
+#   mutate(age = case_when(age==0~primary_diagnosis_age,
+#                          T~age)) # remove rows with missing age values
+# 
+# # group the dataset by patient ID and outcome, and calculate the rank of age within each group
+# df_longneg <- df_longneg %>% 
+#   group_by(pid) %>% 
+#   mutate(rank = rank(age, ties.method = "first")) %>%
+#   ungroup() %>% mutate(outcome = str_replace(outcome, "age_", "")) %>% 
+#   group_by(pid) %>% arrange(pid,rank) %>% 
+#   mutate(previous_event = ifelse(rank == 1, "share", lag(outcome))) %>% 
+#   ungroup() %>% select(sarc_status,pid,rank,previous_event,outcome,age)
+# 
+# edges_df_neg <- df_longneg %>% group_by(previous_event,rank, outcome) %>% 
+#   summarise(n=n()) %>% ungroup() %>% arrange(rank,desc(n)) %>% 
+#   mutate(from = paste(rank, previous_event, sep = "_"),
+#          to = paste(rank+1, outcome, sep = "_")
+#   )
+# nodes_df_neg <- edges_df_neg %>%  dplyr::select(from,to) %>% 
+#   pivot_longer(cols = everything(), values_to = "label") %>% 
+#   dplyr::select(label) %>% unique() %>% 
+#   mutate(source = row_number()-1,
+#          name = str_remove(label, "[1234567890]"),
+#          name = str_remove(name, "[0123456789]"),
+#          name = str_remove(name, "_"))
+# 
+# edges_df_neg <- edges_df_neg %>% 
+#   left_join(nodes_df, by = c("from" = "label")) %>% 
+#   left_join(rename(nodes_df, "target"="source"), by = c("to" = "label"))
+# 
+# #######
+# 
+# 
+# 
+# # create a long dataset with relevant event-variables to rank the timing of events 
+# df_longpos <- dfpos %>% 
+#   mutate(age_hcm = primary_diagnosis_age, # renaming variable
+#          age_htxvad = pmin(age_vad, age_transplant, na.rm = T), #merging vad and HTX
+#          age_af = age_arrhythmia_a_fib, # renaming af var
+#          age_lvsd = pmin(age_lvef50, age_lvef35, na.rm = T),
+#          age_vt = pmin(age_composite_v_arrhythmia, age_cardiac_arrest, na.rm = T), # a composite VT var including cardiac arrest
+#          age_hf = pmin(age_lvsd,age_htxvad, age_composite_hf, age_nyha_hf, age_nyha_hf_systolic, na.rm = T),
+#          age_hcm = case_when(is.na(age_hcm)~first_encounter_age,T~age_hcm)) %>% 
+#   dplyr::select(pid,primary_diagnosis_age,
+#                 age_hcm, age_htn,age_obstruction,age_srt,
+#                 age_af , age_vt, age_syncope,  age_icd,
+#                 age_hf,#age_lvsd, age_nyha_hf, 
+#                 age_stroke,age_htxvad, age_death,
+#                 sarc_status,
+#   ) %>% 
+#   pivot_longer(cols = starts_with("age_"), 
+#                names_to = "outcome",
+#                values_to = "age") %>%
+#   mutate(outcome = case_when(str_detect(outcome, "lvef")~"age_lvef50",
+#                              str_detect(outcome, "age_vad")~"age_transplant",
+#                              T~outcome)) %>% 
+#   drop_na() %>% 
+#   mutate(age = case_when(age==0~primary_diagnosis_age,
+#                          T~age)) # remove rows with missing age values
+# 
+# # group the dataset by patient ID and outcome, and calculate the rank of age within each group
+# df_longpos <- df_longpos %>% 
+#   group_by(pid) %>% 
+#   mutate(rank = rank(age, ties.method = "first")) %>%
+#   ungroup() %>% mutate(outcome = str_replace(outcome, "age_", "")) %>% 
+#   group_by(pid) %>% arrange(pid,rank) %>% 
+#   mutate(previous_event = ifelse(rank == 1, "share", lag(outcome))) %>% 
+#   ungroup() %>% select(sarc_status,pid,rank,previous_event,outcome,age)
+# 
+# edges_df_pos <- df_longpos %>% group_by(previous_event,rank, outcome) %>% 
+#   summarise(n=n()) %>% ungroup() %>% arrange(rank,desc(n)) %>% 
+#   mutate(from = paste(rank, previous_event, sep = "_"),
+#          to = paste(rank+1, outcome, sep = "_")
+#   )
+# nodes_df_pos <- edges_df_pos %>%  dplyr::select(from,to) %>% 
+#   pivot_longer(cols = everything(), values_to = "label") %>% 
+#   dplyr::select(label) %>% unique() %>% 
+#   mutate(source = row_number()-1,
+#          name = str_remove(label, "[1234567890]"),
+#          name = str_remove(name, "[0123456789]"),
+#          name = str_remove(name, "_"))
+# 
+# edges_df_pos <- edges_df_pos %>% 
+#   left_join(nodes_df, by = c("from" = "label")) %>% 
+#   left_join(rename(nodes_df, "target"="source"), by = c("to" = "label"))
 
 
 
@@ -579,7 +579,6 @@ pairs <-
   mutate(rank = dense_rank(desc(pair_frequency)),
          age_rank = dense_rank(desc(min_start))
   )
-pairs
 
 
 ######################
