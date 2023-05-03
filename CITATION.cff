@@ -1,0 +1,47 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: >-
+  Comparing Clinical Course of Hypertrophic Cardiomyopathy
+  in Sarcomere Variant Carriers and Non-Carriers
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Christoffer
+    name-particle: Rasmus
+    family-names: Vissing
+    email: christoffer.rasmus.vissing@regionh.dk
+    affiliation: 'Rigshospitalet, Copenhagen University Hospital'
+    orcid: 'https://orcid.org/0000-0002-0834-206X'
+identifiers:
+  - type: url
+    value: 'https://github.com/christoffervi/sarc_nonsarc'
+repository-code: 'https://github.com/christoffervi/sarc_nonsarc'
+abstract: >-
+  Rare variants in sarcomere genes is a common cause of
+  hypertrophic cardiomyopathy (HCM). However, in a large
+  proportion of patients, genetic testing does not identify
+  a (likely) monogenic cause of disease. Previous studies
+  have suggested that patients with sarcomere variants have
+  a different phenotype to those without. Still a
+  comprehensive comparison of the clinical course in these
+  two groups of patients have not been performed.
+
+  In this study, we compared the clinical course and
+  outcomes of patients with sarcomeric and non-sarcomeric
+  HCM, and found that patients with non-sarcomeric HCM had a
+  higher prevalence of classic cardiovascular co-morbidities
+  and an obstructive phenotype, while patients with
+  sarcomeric HCM were more likely to be diagnosed with
+  cardiac arrhythmias and left ventricular systolic
+  dysfunction. This difference in disease phenotype may have
+  important implications for risk stratification and
+  treatment selection. 
+keywords:
+  - hypertropihc cardiomyopathy
+license: MIT
+commit: 49339b3
+date-released: '2023-05-03'
