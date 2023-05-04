@@ -10,8 +10,7 @@ message: >-
   metadata from this file.
 type: software
 authors:
-  - given-names: Christoffer
-    name-particle: Rasmus
+  - given-names: Christoffer Rasmus
     family-names: Vissing
     email: christoffer.rasmus.vissing@regionh.dk
     affiliation: 'Rigshospitalet, Copenhagen University Hospital'
@@ -41,7 +40,7 @@ abstract: >-
   important implications for risk stratification and
   treatment selection. 
 keywords:
-  - hypertropihc cardiomyopathy
+  - hypertrophic cardiomyopathy
 license: MIT
 commit: 49339b3
 date-released: '2023-05-03'
