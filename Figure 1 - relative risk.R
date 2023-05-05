@@ -26,7 +26,7 @@ rr_df<-
          rr_func(dfposneg, sarc_status, event_htn, "Hypertension"),
          rr_func(dfposneg, sarc_status, event_icd, "ICD implantation"),
          rr_func(dfposneg, sarc_status, event_lvsd, "LVSD"),
-         rr_func(dfposneg, sarc_status, event_nyha_hf, "Dyspnea"),
+         rr_func(dfposneg, sarc_status, event_nyha_hf, "NYHA III-IV"),
          rr_func(dfposneg, sarc_status, event_obstruction, "Obstruction"),
          rr_func(dfposneg, sarc_status, event_srt, "SRT"),
          rr_func(dfposneg, sarc_status, event_composite_v_arrhythmia, "Composite VT"),
@@ -43,7 +43,7 @@ rr_df<-
                  rr_p(dfposneg, sarc_status, event_htn, "Hypertension"),
                  rr_p(dfposneg, sarc_status, event_icd, "ICD implantation"),
                  rr_p(dfposneg, sarc_status, event_lvsd, "LVSD"),
-                 rr_p(dfposneg, sarc_status, event_nyha_hf, "Dyspnea"),
+                 rr_p(dfposneg, sarc_status, event_nyha_hf, "NYHA III-IV"),
                  rr_p(dfposneg, sarc_status, event_obstruction, "Obstruction"),
                  rr_p(dfposneg, sarc_status, event_srt, "SRT"),
                  rr_p(dfposneg, sarc_status, event_composite_v_arrhythmia, "Composite VT"),
@@ -58,7 +58,7 @@ rr_df %>% mutate(.est = if_else(rowname=="sarc(-)",NA,.est),
 ) %>% 
 #  filter(term !="Cardiac transplantation") %>% 
   mutate(term = fct_reorder(term, desc(.est)),
-         term = fct_relevel(term, "Hypertension", "Obstruction", "Obesity", "SRT", "Dyspnea", "nyha_hf", "Stroke", "Composite HF", "Death", "Atrial Fibrillation",
+         term = fct_relevel(term, "Hypertension", "Obstruction", "Obesity", "SRT", "NYHA III-IV", "nyha_hf", "Stroke", "Composite HF", "Death", "Atrial Fibrillation",
                             "NSVT", "Cardiac Arrest", "Ablation", "ICD implantation", "LVEF ≤50", "LVEF ≤35", "LVSD", "Composite VT"), 
 term = fct_rev(term)) %>% 
   ggplot(aes(y= term, x= .est, xmin = .lower, xmax = .upper, fill = log(.est^(1/3))))+
@@ -73,8 +73,8 @@ term = fct_rev(term)) %>%
   scale_fill_scico(palette = "berlin")+
   scale_y_discrete()+
   scale_x_log10(breaks = c(.5,.75,1,1.5,2,2.5,3.5,4.7))+
-  geom_text(aes(x= 10, y = term, label = sarc_prevalence), size = 3)+
-  geom_text(aes(x= 6, y = term, label = nonsarc_prevalence), size = 3)+
+  geom_text(aes(x= 10, y = term, label = sarc_prevalence), size = 3.5, vjust = 0.3)+
+  geom_text(aes(x= 6, y = term, label = nonsarc_prevalence), size = 3.5, vjust = 0.3)+
   theme(panel.background = element_rect(fill = "white"),
         axis.text = element_markdown(family = "Roboto", color = "black"),
         axis.title = element_markdown(family = "Roboto", color = "black"),
@@ -82,10 +82,9 @@ term = fct_rev(term)) %>%
   )+
   geom_segment(aes(x= c(.9), xend = c(.6), y= 15.6, yend=15.6), arrow = arrow(length = unit(.02, "npc"), type = "closed"))+
   geom_segment(aes(x= c(1.1), xend = c(1.7), y= 15.6, yend=15.6), arrow = arrow(length = unit(.02, "npc"), type = "closed"))+
-  annotate("text", x= c(6,10), y= 16, label = c("non-sarc \n prevalence", "sarc\n prevalence"), family= "Roboto", size = 3.5, fontface = "bold")+
-  annotate("text", x= c(.9,1.1), y= 16, label = c("Higher in \n non-sarcomeric HCM", "Higher in \n sarcomeric HCM"), family= "Roboto", size = 2.7, fontface = "bold", hjust = c(1,0), vjust =0)+
+  annotate("text", x= c(6,10), y= 16, label = c("Prevalence \n non-sarcomeric\n HCM", "Prevalence\n sarcomeric\n HCM"), family= "Roboto", size = 3, fontface = "bold", vjust = .33)+
+  annotate("text", x= c(.9,1.1), y= 16, label = c("Higher in \n non-sarcomeric HCM", "Higher in \n sarcomeric HCM"), family= "Roboto", size = 3, fontface = "bold", hjust = c(1,0), vjust =0)+
   coord_cartesian(xlim = c(.4,12), ylim=c(.6,17), expand = F)
-ggsave(filename = "RR2.tiff", compression = "lzw", height = 16, width = 24, units = "cm", dpi =1200)     
-
+ggsave(filename = "RR2.tiff", compression = "lzw", height = 16, width = 20, units = "cm", dpi =1900)    
 
     

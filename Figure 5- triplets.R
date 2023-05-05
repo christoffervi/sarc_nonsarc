@@ -220,3 +220,12 @@ triplets %>% ungroup() %>%
   geom_text(aes(x=68.5, label = rr), color = "black", family = "Helvetica")+
   annotate("text", x= 68.5, y=17.4, label = "Relative risk\nin sarc",
            family = "Helvetica", fontface = "bold", vjust = 0.5, size = 3.5)
+
+
+
+#######
+
+
+triplets %>% group_by(sarc_status, triplet) %>% filter(row_number()==1) %>% ungroup() %>% 
+  mutate(obstruction = str_detect(triplet, "obstruc")) %>% 
+  group_by(obstruction, sarc_status) %>% summarise(n= n(), sum = sum(triplet_frequency))
