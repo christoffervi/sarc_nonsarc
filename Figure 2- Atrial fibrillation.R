@@ -44,6 +44,10 @@ dat.df %>% filter(!is.na(sarc_status)) %>%
   
   #mutate(agegroup = factor(agegroup, labels = c("<12","12-19", "20-29","30-39", ">40"))) %>% 
   ggplot(aes(x= age, y= est, group = sarc_status, ymin = lower, ymax= upper, fill = sarc_status))+
+scale_x_discrete()+
+    annotate("rect", xmin = 5.6,xmax=7.4,ymin=-100,
+           ymax=trunc(max(dat.df$upper)*1000)+1,
+           fill = "#e6e1e1FF", alpha = .5)+
   geom_errorbar(position = position_dodge(width = .3), width = .1)+
   #geom_line(position = position_dodge(width = .3))+
   geom_point(position = position_dodge(width = .3), shape = c(21,21,21,21,21,21,21,21,21,21,22,22), size = 4, 
@@ -177,7 +181,12 @@ p4<-
         axis.line.x = element_line(),
         axis.line.y = element_line(),
         axis.text.x = element_text(family = "Helvetica", size = 10),
-        axis.text.y = element_text(family = "Helvetica", size = 10))
+        axis.text.y = element_text(family = "Helvetica", size = 10))+
+  annotate("text", x= .5,y=.125, hjust =0, family = "Helvetica",
+           label = glue::glue("log rank {surv_pvalue(hf %>% 
+                mutate(time1 = t2_af-first_encounter_age ) %>% 
+                filter(time1>0) %>% 
+                surv_fit(Surv(time1, event_af)~sarc_status, data = .))[,4]}"))
 p5<-
   hf %>% 
   mutate(time1 = t2_af-first_encounter_age ) %>% 
@@ -187,7 +196,7 @@ p5<-
          time2 = trunc(time),
          strata = str_replace(strata, "sarc_status=", "")) %>% 
   group_by(strata, time2) %>% 
-  mutate(r= row_number()) %>% filter(r==1, time2<16) %>% 
+  mutate(r= row_number()) %>% filter(r==1, time2<11) %>% 
   summarise(risk = n.risk, .groups = "drop") %>%  #pivot_wider(names_from = strata, values_from = risk) 
   #filter(time2 %in% c(0,2,4,6,8,10)) %>% 
   ggplot(aes(x=time2, y= strata, label = risk))+
@@ -201,12 +210,8 @@ p5<-
                   ylim= c(0,2.4),
                   expand = F, clip = "off")
 
-p3/p4
 p4/p5/p1/p2/p3+plot_layout(heights = c(3,1,3,.75,.75))+plot_annotation(tag_levels = list(c("A","","B","","")))
 ggsave(filename = "af_age.tiff", compression = "lzw", height = 26, width = 20, units = "cm", dpi =900)
 
 
 
-p1/p2/p3+plot_layout(heights = c(3,1,1))  
-
-p1/p2/p3/p4+plot_layout(heights = c(3,1,1,3))  
