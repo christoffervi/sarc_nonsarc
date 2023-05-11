@@ -37,7 +37,8 @@ df_long1 <- df_long1 %>%
   group_by(pid) %>% arrange(pid,rank) %>% 
   mutate(previous_event = ifelse(rank == 1, "share", lag(outcome)),
          time_to = if_else(age<=primary_diagnosis_age, 0, age-primary_diagnosis_age),
-         time_to = if_else(age1<=first_encounter_age, 0, age1-first_encounter_age)) %>% 
+         #time_to = if_else(age1<=first_encounter_age, 0, age1-first_encounter_age)
+         ) %>% 
   ungroup() %>% select(sarc_status,pid,rank,previous_event,outcome,age,time_to) %>% 
   mutate()
 
@@ -63,18 +64,21 @@ df_long1 %>%
   ) %>% 
   
   filter(abs(time_to)<20) %>% 
+  filter(feature %in% c("Atrial fibrillation", "NYHA III-IV", "Ventricular tachycardia", 
+                        "LV systolic dysfunction", "Cardiac transplantation", "Death")) %>% 
+  filter(time_to>0) %>% 
   ggplot()+
   #geom_density(aes(x=time_to, fill = sarc_status), alpha = .3)+
   geom_histogram(aes(x=time_to, fill = sarc_status), alpha = .9, position = position_dodge(), 
                  binwidth = 2)+
   #geom_density(aes(x=time_to, fill = sarc_status), alpha = .9, position = position_dodge(), binwidth = 3)+
-  facet_wrap(~feature, scales = "free_y", nrow = 4
+  facet_wrap(~feature, scales = "free_y", nrow = 3
   )+
   scale_fill_scico_d()+
-  labs(x= "Time from first SHaRe visit",
+  labs(x= "Years from diagnosis of HCM",
        y= "Number of patients")+
   scale_x_continuous(breaks = seq(0,20,4))+
-  scale_y_log10()+
+#  scale_y_log10()+
   theme(panel.background = element_rect(fill = "white"),
         panel.grid.major.y = element_line(color = "gray79", linetype = 3),
         panel.grid.major.x = element_line(color = "gray79", linetype = 3),
