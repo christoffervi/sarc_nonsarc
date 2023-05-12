@@ -45,8 +45,8 @@ dat.df %>% filter(!is.na(sarc_status)) %>%
   #mutate(agegroup = factor(agegroup, labels = c("<12","12-19", "20-29","30-39", ">40"))) %>% 
   ggplot(aes(x= age, y= est, group = sarc_status, ymin = lower, ymax= upper, fill = sarc_status))+
 scale_x_discrete()+
-    annotate("rect", xmin = 5.6,xmax=7.4,ymin=-100,
-           ymax=trunc(max(dat.df$upper)*1000)+1,
+    annotate("rect", xmin = 5.6,xmax=6.4,ymin=-100,
+           ymax=trunc(max(dat.df$upper)*1000)+2,
            fill = "#e6e1e1FF", alpha = .5)+
   geom_errorbar(position = position_dodge(width = .3), width = .1)+
   #geom_line(position = position_dodge(width = .3))+
@@ -55,7 +55,7 @@ scale_x_discrete()+
   scale_fill_scico_d(palette = "batlow")+
   scale_y_continuous(breaks = seq(0,200,10))+
   #scale_y_log10(breaks = c(.01,.02,.04,.08,.16))+
-  coord_cartesian(xlim = c(.6,6.4), ylim = c(-0,60), expand = F, clip = "off")+
+  coord_cartesian(xlim = c(.6,6.4), ylim = c(-0,trunc(max(dat.df$upper)*1000)+2), expand = F, clip = "off")+
   annotate("text", x= c(5.13,4.87), y = c(47.241527,39.518524),
            label = c("Sarc+","Sarc-"), hjust = c(0,1), vjust= .5)+
   labs(#title ="Age-specific incidence of obstruction",
@@ -145,8 +145,8 @@ dat.df.smr  %>%
   ggplot(aes(x= agegroup, y= 1, label=paste(round(group1_smr,2),
                                             "\n (CI: ",
                                             round(group1_smr_low,2),
-                                            " to ",
-                                          
+                                            #" to ",
+                                          "-",
                                             round(group1_smr_upp,2),
                                             ")\n",
                                             p,
@@ -196,7 +196,7 @@ p5<-
          time2 = trunc(time),
          strata = str_replace(strata, "sarc_status=", "")) %>% 
   group_by(strata, time2) %>% 
-  mutate(r= row_number()) %>% filter(r==1, time2<11) %>% 
+  mutate(r= row_number()) %>% filter(r==1, time2<10.4) %>% 
   summarise(risk = n.risk, .groups = "drop") %>%  #pivot_wider(names_from = strata, values_from = risk) 
   #filter(time2 %in% c(0,2,4,6,8,10)) %>% 
   ggplot(aes(x=time2, y= strata, label = risk))+
@@ -211,7 +211,7 @@ p5<-
                   expand = F, clip = "off")
 
 p4/p5/p1/p2/p3+plot_layout(heights = c(3,1,3,.75,.75))+plot_annotation(tag_levels = list(c("A","","B","","")))
-ggsave(filename = "af_age.tiff", compression = "lzw", height = 26, width = 20, units = "cm", dpi =900)
+ggsave(filename = "af_age.tiff", compression = "lzw", height = 26, width = 18, units = "cm", dpi =900)
 
 
 

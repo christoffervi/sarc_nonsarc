@@ -82,9 +82,11 @@ term = fct_rev(term)) %>%
   )+
   geom_segment(aes(x= c(.9), xend = c(.6), y= 15.6, yend=15.6), arrow = arrow(length = unit(.02, "npc"), type = "closed"))+
   geom_segment(aes(x= c(1.1), xend = c(1.7), y= 15.6, yend=15.6), arrow = arrow(length = unit(.02, "npc"), type = "closed"))+
-  annotate("text", x= c(6,10), y= 16, label = c("Prevalence \n non-sarcomeric\n HCM", "Prevalence\n sarcomeric\n HCM"), family= "Roboto", size = 3, fontface = "bold", vjust = .33)+
+  annotate("text", x= c(6,10), y= 16, label = c(glue::glue("Prevalence \n non-sarcomeric\n HCM n= {nrow(dfneg)}"), 
+                                                glue::glue("Prevalence \n sarcomeric\n HCM n= {nrow(dfpos)}") 
+                                                ), family= "Roboto", size = 3, fontface = "bold", vjust = .33)+
   annotate("text", x= c(.9,1.1), y= 16, label = c("Higher in \n non-sarcomeric HCM", "Higher in \n sarcomeric HCM"), family= "Roboto", size = 3, fontface = "bold", hjust = c(1,0), vjust =0)+
-  coord_cartesian(xlim = c(.4,12), ylim=c(.6,17), expand = F)
+  coord_cartesian(xlim = c(.4,12), ylim=c(.6,17), expand = F, clip = "off")
 ggsave(filename = "RR2.tiff", compression = "lzw", height = 16, width = 20, units = "cm", dpi =1900)    
 
     

@@ -44,8 +44,8 @@ q1<-
   
   #mutate(agegroup = factor(agegroup, labels = c("<12","12-19", "20-29","30-39", ">40"))) %>% 
   ggplot(aes(x= age, y= est, group = sarc_status, ymin = lower, ymax= upper, fill = sarc_status))+
-  annotate("rect", xmin = 5.6,xmax=7.4,ymin=-100,
-           ymax=trunc(max(dat.df$upper)*1000)+1,
+  annotate("rect", xmin = 5.6,xmax=6.4,ymin=-100,
+           ymax=trunc(max(dat.df$upper)*1000)+.1,
            fill = "#e6e1e1FF", alpha = .5)+
   scale_x_discrete()+
   geom_errorbar(position = position_dodge(width = .3), width = .1)+
@@ -55,7 +55,7 @@ q1<-
   scale_fill_scico_d(palette = "batlow")+
   scale_y_continuous(n.breaks = 4)+
   #scale_y_log10(breaks = c(.01,.02,.04,.08,.16))+
-  coord_cartesian(xlim = c(.6,6.4), ylim = c(-0,trunc(max(dat.df$upper)*1000)+1), expand = F, clip = "off")+
+  coord_cartesian(xlim = c(.6,6.4), ylim = c(-0,trunc(max(dat.df$upper)*1000)+.1), expand = F, clip = "off")+
   annotate("text", x= c(5.13,4.87), y = c(dat.df$est[9]*1000,dat.df$est[10]*1000+.1),
            label = c("Sarc+","Sarc-"), hjust = c(0,1), vjust= .5)+
   labs(#title ="Age-specific incidence of obstruction",
@@ -163,7 +163,7 @@ q3<-
   ggplot(aes(x= agegroup, y= 1, label=paste(round(group1_smr,2),
                                             "\n (CI: ",
                                             round(group1_smr_low,2),
-                                            " to ",
+                                            "-",
                                             
                                             round(group1_smr_upp,2),
                                             ")\n",
@@ -234,6 +234,6 @@ q5<-
                   expand = F, clip = "off")
 
 q4/q5/q1/q2/q3+plot_layout(heights = c(3,1,3,.75,.75))+plot_annotation(tag_levels = list(c("A","","B","","")))
-ggsave(filename = "vt_age.tiff", compression = "lzw", height = 26, width = 20, units = "cm", dpi =900)
+ggsave(filename = "vt_age.tiff", compression = "lzw", height = 26, width = 18, units = "cm", dpi =900)
 
 

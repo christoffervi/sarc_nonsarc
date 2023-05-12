@@ -93,4 +93,5 @@ df_long1 %>%
         legend.position = "bottom",#c(0.875,.16),
         legend.title = element_blank(), legend.text = element_markdown(family = "Roboto", color = "black")
   )
+ggsave(filename = "Figure 3.tiff", compression = "lzw", height = 18, width = 24, units = "cm", dpi =1900)
 ggsave(filename = "Chrono event-timing_log.tiff", compression = "lzw", height = 18, width = 24, units = "cm", dpi =900)
