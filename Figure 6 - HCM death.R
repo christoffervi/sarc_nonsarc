@@ -185,6 +185,54 @@ p3<-
   coord_cartesian(xlim = c(.6,6.4), ylim = c(.5,1.5), expand = F, clip = "off")+
   annotate("text", x= c(.6), y = c(1.4),family = "Roboto", fontface = "bold",
            label = c("SIR"), hjust = 0, vjust= 0)
+
+
+hf %>% 
+  mutate(time1 = t2_death-first_encounter_age ) %>% 
+  filter(time1>0) %>% 
+  coxph(Surv(time1, event_hcm_death)~sarc_status, data = .)%>% broom::tidy(exponentiate = T, conf.int=T) ->cox_death
+
+hf %>% 
+  mutate(time1 = t2_death-first_encounter_age,
+         event_hcm_death_cmp = case_when(event_hcm_death==1~1,
+                                         event_death==1~2,
+                                         T~0)) %>% 
+  filter(time1>0) %>% 
+  rms::npsurv(Surv(time1, factor(event_hcm_death_cmp))~sarc_status, data = .) %>% 
+  broom::tidy() %>%filter(state %in% c("1")) %>% 
+  ggplot(aes(x=time, y=estimate, color = strata, fill = strata))+
+  geom_line()+
+  geom_ribbon(aes(ymin=conf.low, ymax=conf.high), alpha = .5)+
+  geom_line(aes(x=time, y=estimate), alpha = 1,
+            #color = scico(1,palette = "lapaz",,begin = .4),
+  )+
+  coord_cartesian(xlim = c(0,10), 
+                  ylim= c(0,.053),
+                  expand = F)+
+  labs(x = "Years from first SHaRe visit",
+       y = "Cumulative incidence of HCM-related death")+
+  scale_fill_scico_d()+
+  scale_color_scico_d()+
+  scale_x_continuous(breaks = seq(0,10,1))+
+  theme(panel.background = element_rect(fill = "white"),
+        panel.grid.major.y = element_line(color = "gray79", linetype = 3),
+        axis.text = element_markdown(family = "Roboto", color = "black"),
+        axis.title.x = element_text(family = "Helvetica", size = 10, hjust = 1),
+        axis.title.y = element_text(family = "Helvetica", size = 10, hjust = 1),
+        legend.position = "none",
+        axis.line.x = element_line(),
+        axis.line.y = element_line(),
+        axis.text.x = element_text(family = "Helvetica", size = 10),
+        axis.text.y = element_text(family = "Helvetica", size = 10))+
+  annotate("text", x= .5,y=.025, hjust =0, family = "Helvetica",
+           label = glue::glue("log rank {surv_pvalue(hf %>% 
+                mutate(time1 = t2_death-first_encounter_age ) %>% 
+                filter(time1>0) %>% 
+                surv_fit(Surv(time1, event_hcm_death)~sarc_status, data = .))[,4]}"))
+
+coxph(Surv(time1, event_hcm_death)~sarc_status, data = .)%>% broom::tidy(exponentiate = T, conf.int=T)
+
+
 p4<-
   hf %>% 
   mutate(time1 = t2_death-first_encounter_age ) %>% 

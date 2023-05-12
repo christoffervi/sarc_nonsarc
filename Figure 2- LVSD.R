@@ -52,9 +52,9 @@ p1<-
   geom_point(position = position_dodge(width = .3), shape = c(21,21,21,21,21,21,21,21,21,21,22,22), size = 4, 
              show.legend = F)+
   scale_fill_scico_d(palette = "batlow")+
-  scale_y_continuous(n.breaks = 4)+
+  scale_y_continuous(n.breaks = 5)+
   #scale_y_log10(breaks = c(.01,.02,.04,.08,.16))+
-  coord_cartesian(xlim = c(.6,6.4), ylim = c(-0,trunc(max(dat.df$upper)*1000)+.2), expand = F, clip = "off")+
+  coord_cartesian(xlim = c(.6,6.4), ylim = c(-0,(max(dat.df$upper)*1000)+.2), expand = F, clip = "off")+
   annotate("text", x= c(5.13,4.87), y = c(dat.df$est[9]*1000,dat.df$est[10]*1000+.1),
            label = c("Sarc+","Sarc-"), hjust = c(0,1), vjust= .5)+
   labs(#title ="Age-specific incidence of obstruction",
@@ -233,7 +233,7 @@ p5<-
                   expand = F, clip = "off")
 
 p4/p5/p1/p2/p3+plot_layout(heights = c(3,1,3,.75,.75))+plot_annotation(tag_levels = list(c("A","","B","","")))
-ggsave(filename = "lvsd_age.tiff", compression = "lzw", height = 26, width = 20, units = "cm", dpi =900)
+ggsave(filename = "lvsd_age.tiff", compression = "lzw", height = 26, width = 20, units = "cm", dpi =1900)
 
 
 
