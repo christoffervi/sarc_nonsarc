@@ -63,8 +63,8 @@ rr_df %>% mutate(.est = if_else(rowname=="sarc(-)",NA,.est),
 term = fct_rev(term)) %>% 
   ggplot(aes(y= term, x= .est, xmin = .lower, xmax = .upper, fill = log(.est^(1/3))))+
   
- # geom_rect(aes(xmin=1,xmax = 3,ymin=.8,ymax=7.2),fill = "gray89", alpha = .2)+
-  #geom_rect(aes(xmin=1,xmax = .5,ymin=10.8,ymax=13.2),fill = "gray89", alpha = .2)+
+ # geom_rect(aes(xmin=1,xmax = 3,ymin=.8,ymax=8.2),fill = "gray89", alpha = .2)+
+ # geom_rect(aes(xmin=1,xmax = .5,ymin=11.8,ymax=15.2),fill = "gray89", alpha = .2)+
   geom_segment(aes(x=.4, xend=4.8, y=term, yend= term), color = "gray", linetype = 3)+
   geom_vline(aes(xintercept =1), color = "red", linetype =2)+
   geom_errorbar(width = .1)+
@@ -89,4 +89,4 @@ term = fct_rev(term)) %>%
   coord_cartesian(xlim = c(.4,12), ylim=c(.6,17), expand = F, clip = "off")
 ggsave(filename = "RR2.tiff", compression = "lzw", height = 16, width = 20, units = "cm", dpi =1900)    
 
-    
+ggsave(filename = "RR2.tiff", compression = "lzw", height = 16*.75, width = 24*.75, units = "cm", dpi =2200)    

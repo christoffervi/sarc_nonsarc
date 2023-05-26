@@ -146,12 +146,12 @@ p2<-
   
   #  geom_text(aes(label = paste(round(nyear,0), "\n(",ncas,")",sep = "")), size = 3, 
   #             show.legend = F,family = "Roboto")+
-  geom_text(aes(label = round(nyear,0)), size = 3.5, 
+  geom_text(aes(label = round(nyear,0)), size = 2.5, 
             show.legend = F,family = "Roboto")+
   scale_color_scico_d(palette = "batlow")+
   coord_cartesian(xlim = c(.6,6.4), ylim = c(0,2.4), expand = F, clip = "off")+
   geom_segment(aes(x= .7,xend=.8,y=sarc_status, yend = sarc_status, color = sarc_status), show.legend = F, linewidth=2)+
-  annotate("text", x= c(.6), y = c(2.4),family = "Roboto", fontface = "bold",
+  annotate("text", x= c(.6), y = c(2.4),family = "Roboto", fontface = "bold", size =3,
            label = c("Years at risk"), hjust = 0, vjust= 0)+
   theme_void(base_family = "Roboto")
 
@@ -162,16 +162,16 @@ p3<-
   ggplot(aes(x= agegroup, y= 1, label=paste(round(group1_smr,2),
                                             "\n (CI: ",
                                             round(group1_smr_low,2),
-                                            " to ",
+                                            "-",
                                             
                                             round(group1_smr_upp,2),
                                             ")\n",
                                             p,
                                             sep = "")))+
-  geom_text(family = "Roboto", size =3.5)+ theme_void()+
+  geom_text(family = "Roboto", size =2.5)+ theme_void()+
   coord_cartesian(xlim = c(.6,6.4), ylim = c(.5,1.5), expand = F, clip = "off")+
   annotate("text", x= c(.6), y = c(1.4),family = "Roboto", fontface = "bold",
-           label = c("SIR"), hjust = 0, vjust= 0)
+           label = c("SIR"), hjust = 0, vjust= 0, size =3)
 p4<-
   hf %>% 
   mutate(time1 = t2_lvsd-first_encounter_age ) %>% 
@@ -222,7 +222,7 @@ p5<-
   summarise(risk = n.risk, .groups = "drop") %>%  #pivot_wider(names_from = strata, values_from = risk) 
   #filter(time2 %in% c(0,2,4,6,8,10)) %>% 
   ggplot(aes(x=time2, y= strata, label = risk))+
-  geom_text(size= 3.5, family = "Roboto")+
+  geom_text(size= 3, family = "Roboto")+
   theme_void()+
   scale_color_scico_d()+
   geom_segment(aes(x= -.3,xend=-.5,y=strata, yend = strata, color = strata), show.legend = F, linewidth=2)+
@@ -235,5 +235,8 @@ p5<-
 p4/p5/p1/p2/p3+plot_layout(heights = c(3,1,3,.75,.75))+plot_annotation(tag_levels = list(c("A","","B","","")))
 ggsave(filename = "lvsd_age.tiff", compression = "lzw", height = 26, width = 20, units = "cm", dpi =1900)
 
+p4+p1+p5+p2+p3+plot_layout(design = layout)+plot_annotation(tag_levels = list(c("A","B","","","")))
+
+ggsave(filename = "af_age.tiff", compression = "lzw", height = 12, width = 24, units = "cm", dpi =900)
 
 
