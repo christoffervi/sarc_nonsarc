@@ -296,7 +296,7 @@ p5<-
 patch1<-p4/p5+plot_layout(heights = c(1,.25,1.5,0,0))
 patch2 <- p1/p2/p3+plot_layout(heights = c(1,.25,.25,0,0))
 patch1+patch2
-ggsave(filename = "cv_death_age.tiff", compression = "lzw", height = 26, width = 20, units = "cm", dpi =900)
+ggsave(filename = "cv_death_age.pdf", device = cairo_pdf, height = 26, width = 20, units = "cm", dpi =3900)
 
 
 layout <- "

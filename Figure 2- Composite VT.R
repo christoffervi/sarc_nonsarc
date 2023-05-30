@@ -234,8 +234,8 @@ q5<-
                   expand = F, clip = "off")
 
 q4/q5/q1/q2/q3+plot_layout(heights = c(3,1,3,.75,.75))+plot_annotation(tag_levels = list(c("A","","B","","")))
-ggsave(filename = "vt_age.tiff", compression = "lzw", height = 26, width = 18, units = "cm", dpi =900)
+ggsave(filename = "vt_age.pdf", device = cairo_pdf, height = 26, width = 18, units = "cm", dpi =3300)
 
 
 p4+p1+p5+p2+p3+plot_layout(design = layout)+plot_annotation(tag_levels = list(c("A","B","","","")))
-ggsave(filename = "cv_death_age.tiff", compression = "lzw", height = 13, width = 35, units = "cm", dpi =900)
+ggsave(filename = "cv_death_age.pdf", device = cairo_pdf,height = 13, width = 35, units = "cm", dpi =900)

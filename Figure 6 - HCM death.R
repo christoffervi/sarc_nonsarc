@@ -290,7 +290,7 @@ p5<-
                   expand = F, clip = "off")
 
 p4/p5/p1/p2/p3+plot_layout(heights = c(3,1,3,.75,.75))+plot_annotation(tag_levels = list(c("A","","B","","")))
-ggsave(filename = "hcm_death_age.tiff", compression = "lzw", height = 26, width = 20, units = "cm", dpi =900)
+ggsave(filename = "hcm_death_age.pdf", device = cairo_pdf, height = 26, width = 20, units = "cm", dpi =3300)
 
 p4+p1+p5+p2+p3+plot_layout(design = layout)+plot_annotation(tag_levels = list(c("A","B","","","")))
 
