@@ -44,7 +44,7 @@ q1<-
   
   #mutate(agegroup = factor(agegroup, labels = c("<12","12-19", "20-29","30-39", ">40"))) %>% 
   ggplot(aes(x= age, y= est, group = sarc_status, ymin = lower, ymax= upper, fill = sarc_status))+
-  annotate("rect", xmin = 5.6,xmax=6.4,ymin=-100,
+  annotate("rect", xmin = 5.5,xmax=6.5,ymin=-100,
            ymax=trunc(max(dat.df$upper)*1000)+.1,
            fill = "#e6e1e1FF", alpha = .5)+
   scale_x_discrete()+
@@ -53,7 +53,7 @@ q1<-
   geom_point(position = position_dodge(width = .3), shape = c(21,21,21,21,21,21,21,21,21,21,22,22), size = 4, 
              show.legend = F)+
   scale_fill_scico_d(palette = "batlow")+
-  scale_y_continuous(n.breaks = 4)+
+  scale_y_continuous(n.breaks = 6)+
   #scale_y_log10(breaks = c(.01,.02,.04,.08,.16))+
   coord_cartesian(xlim = c(.6,6.4), ylim = c(-0,trunc(max(dat.df$upper)*1000)+.1), expand = F, clip = "off")+
   annotate("text", x= c(5.13,4.87), y = c(dat.df$est[9]*1000,dat.df$est[10]*1000+.1),

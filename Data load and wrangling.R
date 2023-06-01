@@ -91,6 +91,7 @@ df<- d %>% filter(primary_diagnosis =="HCM") %>%
                                  clinic_visit_bmi9>=30~clinic_visit_age9,
                                  T~NA_real_
          ),
+         t2_obesity = if_else(is.na(age_obesity), last_encounter_age,age_obesity),
          bsa = case_when(!is.na(clinic_visit_bsa0)~clinic_visit_bsa0,                         !is.na(clinic_visit_bsa1)~clinic_visit_bsa1,                         !is.na(clinic_visit_bsa2)~clinic_visit_bsa2,                         !is.na(clinic_visit_bsa3)~clinic_visit_bsa3,
                          !is.na(clinic_visit_bsa4)~clinic_visit_bsa4,                         !is.na(clinic_visit_bsa5)~clinic_visit_bsa5,                         !is.na(clinic_visit_bsa6)~clinic_visit_bsa6,                         !is.na(clinic_visit_bsa7)~clinic_visit_bsa7,
                          !is.na(clinic_visit_bsa8)~clinic_visit_bsa8,                         !is.na(clinic_visit_bsa9)~clinic_visit_bsa9,                         !is.na(clinic_visit_bs_ax)~clinic_visit_bs_ax
