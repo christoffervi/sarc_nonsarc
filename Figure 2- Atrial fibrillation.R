@@ -45,7 +45,7 @@ dat.df %>% filter(!is.na(sarc_status)) %>%
   #mutate(agegroup = factor(agegroup, labels = c("<12","12-19", "20-29","30-39", ">40"))) %>% 
   ggplot(aes(x= age, y= est, group = sarc_status, ymin = lower, ymax= upper, fill = sarc_status))+
 scale_x_discrete()+
-    annotate("rect", xmin = 5.6,xmax=6.4,ymin=-100,
+    annotate("rect", xmin = 5.5,xmax=6.5,ymin=-100,
            ymax=trunc(max(dat.df$upper)*1000)+2,
            fill = "#e6e1e1FF", alpha = .5)+
   geom_errorbar(position = position_dodge(width = .3), width = .1)+
@@ -56,8 +56,8 @@ scale_x_discrete()+
   scale_y_continuous(breaks = seq(0,200,10))+
   #scale_y_log10(breaks = c(.01,.02,.04,.08,.16))+
   coord_cartesian(xlim = c(.6,6.4), ylim = c(-0,trunc(max(dat.df$upper)*1000)+2), expand = F, clip = "off")+
-  annotate("text", x= c(5.13,4.87), y = c(47.241527,39.518524),
-           label = c("Sarc+","Sarc-"), hjust = c(0,1), vjust= .5)+
+  annotate("text", x= c(5.17,4.83), y = c(47.241527,39.518524),
+           label = c("Sarc+","Sarc-"), hjust = c(0,1), vjust= .5, color = "darkslategrey")+
   labs(#title ="Age-specific incidence of obstruction",
     y= "Age-specific incidence per 1,000 person-years",
     x = "Age groups",
@@ -66,15 +66,15 @@ scale_x_discrete()+
   theme(panel.background = element_rect(fill = "white"),
         panel.grid.major.y = element_line(color = "gray79", linetype = 3),
         #axis.text = element_markdown(family = "Roboto", color = "black"),
-        axis.text.x = element_markdown(family = "Helvetica", 
+        axis.text.x = element_markdown(family = "Roboto", 
                                        color = "black", size = 10),
-        axis.title.x = element_text(family = "Helvetica", size = 10, hjust = 1),
-        axis.title.y = element_text(family = "Helvetica", size = 10, hjust = 1),
+        axis.title.x = element_text(family = "Roboto", size = 10, hjust = 1),
+        axis.title.y = element_text(family = "Roboto", size = 10, hjust = 1),
         legend.position = "none",
         axis.line.x = element_line(),
         axis.line.y = element_line(),
-        #axis.text.x = element_text(family = "Helvetica", size = 10),
-        axis.text.y = element_text(family = "Helvetica", size = 10))
+        #axis.text.x = element_text(family = "Roboto", size = 10),
+        axis.text.y = element_text(family = "Roboto", size = 10))
 
 
 
@@ -97,7 +97,8 @@ dat.df %>%
          group1_smr_p = epiR::epi.smr(ncas_group1,group1_expected)$p.value) %>% 
   ungroup() %>% 
   summarise(obs = sum(ncas_group1), exp = sum(group1_expected))
-  epiR::epi.smr(391,292)
+  
+epiR::epi.smr(391,292)
 
   
   smr<-
@@ -127,14 +128,14 @@ p2<-
          across(1:3, ~.x*1000)) %>% 
   ggplot(aes(x= agegroup, y= sarc_status, group = sarc_status, fill = sarc_status))+
   
-  #  geom_text(aes(label = paste(round(nyear,0), "\n(",ncas,")",sep = "")), size = 3, 
+  #  geom_text(aes(label = paste(round(nyear,0), "\n(",ncas,")",sep = "")), size = 3.5, 
   #             show.legend = F,family = "Roboto")+
-  geom_text(aes(label = round(nyear,0)), size = 2.5, 
+  geom_text(aes(label = round(nyear,0)), size = 3.5, 
             show.legend = F,family = "Roboto")+
   scale_color_scico_d(palette = "batlow")+
   coord_cartesian(xlim = c(.6,6.4), ylim = c(0,2.4), expand = F, clip = "off")+
   geom_segment(aes(x= .7,xend=.8,y=sarc_status, yend = sarc_status, color = sarc_status), show.legend = F, linewidth=2)+
-  annotate("text", x= c(.6), y = c(2.4),family = "Roboto", 
+  annotate("text", x= c(.6), y = c(2.6),family = "Roboto", 
            fontface = "bold",
            label = c("Years at risk"), hjust = 0, vjust= 0)+
   theme_void(base_family = "Roboto")
@@ -144,7 +145,7 @@ dat.df.smr  %>%
   mutate(p = case_when(group1_smr_p<0.0001~ "p <0.0001",
                        T~paste("p =",sep = "", round(group1_smr_p,3)))) %>% 
   ggplot(aes(x= agegroup, y= 1, label=paste(round(group1_smr,2),
-                                            "\n (CI: ",
+                                            "\n (",
                                             round(group1_smr_low,2),
                                             #" to ",
                                           "-",
@@ -152,10 +153,10 @@ dat.df.smr  %>%
                                             ")\n",
                                             p,
                                             sep = "")))+
-  geom_text(family = "Roboto", size =2.5)+ theme_void()+
+  geom_text(family = "Roboto", size =3.5)+ theme_void()+
   coord_cartesian(xlim = c(.6,6.4), ylim = c(.5,1.5), expand = F, clip = "off")+
-  annotate("text", x= c(.6), y = c(1.4),family = "Roboto", fontface = "bold",
-           label = c("SIR"), hjust = 0, vjust= 0)
+  annotate("text", x= c(.6), y = c(1.6),family = "Roboto", fontface = "bold",
+           label = c("SIR (CI)"), hjust = 0, vjust= 0)
 p4<-
   hf %>% 
   mutate(time1 = t2_af-first_encounter_age ) %>% 
@@ -165,7 +166,11 @@ p4<-
   ggplot(aes(x=time, y= estimate, ymin = conf.low, ymax= conf.high, color = strata))+
   geom_line( show.legend=F)+
   geom_ribbon(aes(fill = strata, alpha = .2),show.legend=F)+
-  coord_cartesian(xlim = c(0,10), 
+  annotate("text", x= 7.8, y = c(0.12, 0.21), label = c("Sarc+", "Sarc-"),
+           color =scico(2, palette = "batlow", direction = -1), angle= 25,
+           family = "Roboto")+
+  
+    coord_cartesian(xlim = c(0,10), 
                   ylim= c(0,.25),
                   expand = F)+
   labs(x = "Years from first SHaRe visit",
@@ -176,14 +181,14 @@ p4<-
   theme(panel.background = element_rect(fill = "white"),
         panel.grid.major.y = element_line(color = "gray79", linetype = 3),
         axis.text = element_markdown(family = "Roboto", color = "black"),
-        axis.title.x = element_text(family = "Helvetica", size = 10, hjust = 1),
-        axis.title.y = element_text(family = "Helvetica", size = 10, hjust = 1),
+        axis.title.x = element_text(family = "Roboto", size = 10, hjust = 1),
+        axis.title.y = element_text(family = "Roboto", size = 10, hjust = 1),
         legend.position = "none",
         axis.line.x = element_line(),
         axis.line.y = element_line(),
-        axis.text.x = element_text(family = "Helvetica", size = 10),
-        axis.text.y = element_text(family = "Helvetica", size = 10))+
-  annotate("text", x= .5,y=.125, hjust =0, family = "Helvetica",
+        axis.text.x = element_text(family = "Roboto", size = 10),
+        axis.text.y = element_text(family = "Roboto", size = 10))+
+  annotate("text", x= .5,y=.125, hjust =0, family = "Roboto",
            label = glue::glue("log rank {surv_pvalue(hf %>% 
                 mutate(time1 = t2_af-first_encounter_age ) %>% 
                 filter(time1>0) %>% 
@@ -199,31 +204,42 @@ p5<-
   group_by(strata, time2) %>% 
   mutate(r= row_number()) %>% filter(r==1, time2<10.4) %>% 
   summarise(risk = n.risk, .groups = "drop") %>%  #pivot_wider(names_from = strata, values_from = risk) 
-  #filter(time2 %in% c(0,2,4,6,8,10)) %>% 
+  filter(time2 %in% c(0,2,4,6,8,10)) %>% 
   ggplot(aes(x=time2, y= strata, label = risk))+
-  geom_text(size= 3, family = "Roboto")+
+  geom_text(size= 3.5, family = "Roboto")+
   theme_void()+
   scale_color_scico_d()+
   geom_segment(aes(x= -.3,xend=-.5,y=strata, yend = strata, color = strata), show.legend = F, linewidth=2)+
-  annotate("text", x= c(0), y = c(2.4),family = "Roboto", fontface = "bold",
+  annotate("text", x= c(0), y = c(2.6),family = "Roboto", fontface = "bold",
            label = c("Numbers at risk"), hjust = 0, vjust= 0)+
   coord_cartesian(xlim = c(0,10), 
                   ylim= c(0,2.4),
                   expand = F, clip = "off")
 
-p4/p5/p1/p2/p3+plot_layout(heights = c(3,1,3,.75,.75))+plot_annotation(tag_levels = list(c("A","","B","","")))
-ggsave(filename = "af_age.pdf", device = cairo_pdf(), height = 26, width = 18, units = "cm", dpi =3300)
+# p4/p5/p1/p2/p3+plot_layout(heights = c(3,1,3,.75,.75))+plot_annotation(tag_levels = list(c("A","","B","","")))
+# ggsave(filename = "af_age.pdf", device = cairo_pdf(), height = 26, width = 18, units = "cm", dpi =3300)
+# layout <- "
+# AAABBB
+# AAABBB
+# AAABBB
+# AAABBB
+# AAABBB
+# CCCDDD
+# CCCEEE
+# "
+# p4+p1+p5+p2+p3+plot_layout(design = layout)+plot_annotation(tag_levels = list(c("A","B","","","")))
 layout <- "
 AAABBB
 AAABBB
 AAABBB
-AAABBB
-AAABBB
 CCCDDD
-CCCEEE
-"
-p4+p1+p5+p2+p3+plot_layout(design = layout)+plot_annotation(tag_levels = list(c("A","B","","","")))
+EEEFFF
+EEEFFF
+EEEFFF
+GGGHHH
+IIIJJJ"
 
-ggsave(filename = "af_age.tiff", compression = "lzw", height = 12, width = 24, units = "cm", dpi =900)
 
 
+p4+q4+p5+q5+p1+q1+p2+q2+p3+q3+plot_layout(design = layout)+plot_annotation(tag_levels = list(c("A","B","","","C","D")))
+ggsave(filename = "both.pdf", device = cairo_pdf, height = 22, width = 30, units = "cm", dpi =2900)

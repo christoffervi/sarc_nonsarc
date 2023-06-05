@@ -56,8 +56,8 @@ q1<-
   scale_y_continuous(n.breaks = 6)+
   #scale_y_log10(breaks = c(.01,.02,.04,.08,.16))+
   coord_cartesian(xlim = c(.6,6.4), ylim = c(-0,trunc(max(dat.df$upper)*1000)+.1), expand = F, clip = "off")+
-  annotate("text", x= c(5.13,4.87), y = c(dat.df$est[9]*1000,dat.df$est[10]*1000+.1),
-           label = c("Sarc+","Sarc-"), hjust = c(0,1), vjust= .5)+
+  annotate("text", x= c(5.17,4.83), y = c(dat.df$est[9]*1000,dat.df$est[10]*1000+.1),
+           label = c("Sarc+","Sarc-"), hjust = c(0,1), vjust= .5, color= "darkslategrey")+
   labs(#title ="Age-specific incidence of obstruction",
     y= "Age-specific incidence per 1,000 person-years",
     x = "Age groups",
@@ -66,15 +66,15 @@ q1<-
   theme(panel.background = element_rect(fill = "white"),
         panel.grid.major.y = element_line(color = "gray79", linetype = 3),
         #axis.text = element_markdown(family = "Roboto", color = "black"),
-        axis.text.x = element_markdown(family = "Helvetica", 
+        axis.text.x = element_markdown(family = "Roboto", 
                                        color = "black", size = 10),
-        axis.title.x = element_text(family = "Helvetica", size = 10, hjust = 1),
-        axis.title.y = element_text(family = "Helvetica", size = 10, hjust = 1),
+        axis.title.x = element_text(family = "Roboto", size = 10, hjust = 1),
+        axis.title.y = element_text(family = "Roboto", size = 10, hjust = 1),
         legend.position = "none",
         axis.line.x = element_line(),
         axis.line.y = element_line(),
-        #axis.text.x = element_text(family = "Helvetica", size = 10),
-        axis.text.y = element_text(family = "Helvetica", size = 10))
+        #axis.text.x = element_text(family = "Roboto", size = 10),
+        axis.text.y = element_text(family = "Roboto", size = 10))
 
 
 
@@ -145,14 +145,14 @@ q2<-
     across(1:3, ~.x*1000)) %>% 
   ggplot(aes(x= agegroup, y= sarc_status, group = sarc_status, fill = sarc_status))+
   
-  #  geom_text(aes(label = paste(round(nyear,0), "\n(",ncas,")",sep = "")), size = 3, 
+  #  geom_text(aes(label = paste(round(nyear,0), "\n(",ncas,")",sep = "")), size = 3.5, 
   #             show.legend = F,family = "Roboto")+
   geom_text(aes(label = round(nyear,0)), size = 3.5, 
             show.legend = F,family = "Roboto")+
   scale_color_scico_d(palette = "batlow")+
   coord_cartesian(xlim = c(.6,6.4), ylim = c(0,2.4), expand = F, clip = "off")+
   geom_segment(aes(x= .7,xend=.8,y=sarc_status, yend = sarc_status, color = sarc_status), show.legend = F, linewidth=2)+
-  annotate("text", x= c(.6), y = c(2.4),family = "Roboto", fontface = "bold",
+  annotate("text", x= c(.6), y = c(2.6),family = "Roboto", fontface = "bold",
            label = c("Years at risk"), hjust = 0, vjust= 0)+
   theme_void(base_family = "Roboto")
 
@@ -161,7 +161,7 @@ q3<-
   mutate(p = case_when(group1_smr_p<0.001~ "p <0.001",
                        T~paste("p =",sep = "", round(group1_smr_p,3)))) %>% 
   ggplot(aes(x= agegroup, y= 1, label=paste(round(group1_smr,2),
-                                            "\n (CI: ",
+                                            "\n (",
                                             round(group1_smr_low,2),
                                             "-",
                                             
@@ -169,10 +169,10 @@ q3<-
                                             ")\n",
                                             p,
                                             sep = "")))+
-  geom_text(family = "Roboto", size =3.5)+ theme_void()+
+  geom_text(family = "Roboto", size = 3.5)+ theme_void()+
   coord_cartesian(xlim = c(.6,6.4), ylim = c(.5,1.5), expand = F, clip = "off")+
-  annotate("text", x= c(.6), y = c(1.4),family = "Roboto", fontface = "bold",
-           label = c("SIR"), hjust = 0, vjust= 0)
+  annotate("text", x= c(.6), y = c(1.6),family = "Roboto", fontface = "bold",
+           label = c("SIR (CI)"), hjust = 0, vjust= 0)
 q4<-
   hf %>% 
   mutate(time1 = t2_vt-first_encounter_age ) %>% 
@@ -182,6 +182,9 @@ q4<-
   ggplot(aes(x=time, y= estimate, ymin = conf.low, ymax= conf.high, color = strata))+
   geom_line( show.legend=F)+
   geom_ribbon(aes(fill = strata, alpha = .2),show.legend=F)+
+  annotate("text", x= 7.8, y = c(0.074, 0.026), label = c("Sarc+", "Sarc-"),
+           color =scico(2, palette = "batlow", direction = -1), angle= 25,
+           family = "Roboto")+
   coord_cartesian(xlim = c(0,10), 
                   ylim= c(0,hf %>% 
                             mutate(time1 = t2_vt-first_encounter_age ) %>% 
@@ -198,14 +201,14 @@ q4<-
   theme(panel.background = element_rect(fill = "white"),
         panel.grid.major.y = element_line(color = "gray79", linetype = 3),
         axis.text = element_markdown(family = "Roboto", color = "black"),
-        axis.title.x = element_text(family = "Helvetica", size = 10, hjust = 1),
-        axis.title.y = element_text(family = "Helvetica", size = 10, hjust = 1),
+        axis.title.x = element_text(family = "Roboto", size = 10, hjust = 1),
+        axis.title.y = element_text(family = "Roboto", size = 10, hjust = 1),
         legend.position = "none",
         axis.line.x = element_line(),
         axis.line.y = element_line(),
-        axis.text.x = element_text(family = "Helvetica", size = 10),
-        axis.text.y = element_text(family = "Helvetica", size = 10))+
-  annotate("text", x= .5,y=.03, hjust =0, family = "Helvetica",
+        axis.text.x = element_text(family = "Roboto", size = 10),
+        axis.text.y = element_text(family = "Roboto", size = 10))+
+  annotate("text", x= .5,y=.03, hjust =0, family = "Roboto",
            label = glue::glue("log rank {surv_pvalue(hf %>% 
                 mutate(time1 = t2_vt-first_encounter_age ) %>% 
                 filter(time1>0) %>% 
@@ -221,13 +224,13 @@ q5<-
   group_by(strata, time2) %>% 
   mutate(r= row_number()) %>% filter(r==1, time2<11) %>% 
   summarise(risk = n.risk, .groups = "drop") %>%  #pivot_wider(names_from = strata, values_from = risk) 
-  #filter(time2 %in% c(0,2,4,6,8,10)) %>% 
+  filter(time2 %in% c(0,2,4,6,8,10)) %>% 
   ggplot(aes(x=time2, y= strata, label = risk))+
-  geom_text(size= 3.5, family = "Roboto")+
+  geom_text(size = 3.5, family = "Roboto")+
   theme_void()+
   scale_color_scico_d()+
   geom_segment(aes(x= -.3,xend=-.5,y=strata, yend = strata, color = strata), show.legend = F, linewidth=2)+
-  annotate("text", x= c(0), y = c(2.4),family = "Roboto", fontface = "bold",
+  annotate("text", x= c(0), y = c(2.6),family = "Roboto", fontface = "bold",
            label = c("Numbers at risk"), hjust = 0, vjust= 0)+
   coord_cartesian(xlim = c(0,10), 
                   ylim= c(0,2.4),
