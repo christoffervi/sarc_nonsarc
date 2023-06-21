@@ -23,8 +23,9 @@ dfposneg %>%  #filter(fu_lvsd_cmp>=0) %>%
   gtsummary::bold_labels() %>% gtsummary::add_p() %>% 
   as_gt() %>% 
   gtExtras::gt_theme_nytimes() %>% 
-  tab_header("Mortality") #%>%
-  gtsave("mortality.png")
+  tab_header("Mortality")  
+   gtsave("vuffi.rtf")#%>%
+  gtsave("mortality.doc")
   
   
   gtExtras::gt_highlight_rows(

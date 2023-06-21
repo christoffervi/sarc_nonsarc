@@ -252,6 +252,7 @@ x<-
   )+
   facet_wrap(~term)
 x
+ggsave(filename = "supp 3 -rr.pdf", device = cairo_pdf, height = 16, width = 32, units = "cm", dpi =3300)
 
 dfposneg<-
 dfposneg %>% mutate(af_nyha = if_else(age_af<age_nyha_hf,1,0),

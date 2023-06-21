@@ -312,3 +312,42 @@ broom::tidy(conf.int=T)  %>%
   panel.grid.major.y = element_line(color = "gray79", linetype = 3)
   )
 ggsave("vo2_linear_model.tiff", compression = "lzw", width = 28, height = 16, units = "cm")
+
+
+
+
+
+
+full_join(
+vo2 %>% 
+  filter(sarc_status%in% c("SARC(-)", "SARC(+)")) %>%  
+  lm(stress_mvo2~rcs(age,5)+sex+rcs(bmi,5)+af_c+rcs(rer,3), data = .) %>%
+  broom::augment() %>% 
+  mutate(pred_vo2 = stress_mvo2/.fitted*100) %>% 
+  select(.rownames, stress_mvo2,.fitted, pred_vo2),
+
+
+
+
+vo2 %>% 
+  filter(sarc_status%in% c("SARC(-)", "SARC(+)")) %>%  
+  lm(stress_mvo2~rcs(age,5)+sex+rcs(bmi,5)+af_c+rcs(rer,3)+sarc_status, data = .) %>%
+  broom::augment() %>% 
+  mutate(pred_vo2 = stress_mvo2/.fitted*100) %>% 
+  select(.rownames, stress_mvo2,sarc_status)) %>% 
+  t.test(pred_vo2~sarc_status, data =.) %>% broom::tidy()
+
+
+vo2 %>% 
+  filter(sarc_status%in% c("SARC(-)", "SARC(+)")) %>%  
+  lm(stress_mvo2~rcs(age,5)+sex+rcs(bmi,5)+af_c+rcs(rer,3), data = .) %>%
+  broom::glance() #%>% 
+  mutate(pred_vo2 = stress_mvo2/.fitted*100)  
+  select(.rownames, stress_mvo2,.fitted, pred_vo2) %>% 
+  broom::glance()
+
+  
+  
+  qqnorm.wally <- function(x, y, ...) { qqnorm(y, ...) ; abline(a=0, b=1) }
+  MESS::wallyplot(lm(stress_mvo2~rcs(age,5)+sex+rcs(bmi,5)+af_c+rcs(rer,3)+sarc_status, data = vo2), FUN=qqnorm.wally, main="")
+  
