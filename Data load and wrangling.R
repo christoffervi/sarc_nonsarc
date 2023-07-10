@@ -243,7 +243,7 @@ dftested <- df %>% filter(sarc_status %in% c("SARC(+)",
 dfposneg <- df %>% filter(sarc_status %in% c("SARC(-)","SARC(+)"))
 
 # create a long dataset with relevant event-variables to rank the timing of events 
-df_long <- df %>%
+df_long <- dfposneg %>%
   mutate(age_hcm = primary_diagnosis_age, # renaming variable
          age_htxvad = pmin(age_vad, age_transplant, na.rm = T), #merging vad and HTX
          age_af = age_arrhythmia_a_fib, # renaming af var
@@ -453,11 +453,11 @@ df_long <- df %>%
          age_ablation = case_when(event_ablation==1~t2_ablation,T~NA_real_),
   ) %>%
   dplyr::select(pid,primary_diagnosis_age,
-                #age_hcm, 
+                age_hcm, 
                 age_htn,age_obstruction,age_srt,
                 age_af , age_vt, age_syncope,  age_icd,
                 age_hf,
-                #age_lvsd, age_nyha_hf,
+                age_lvsd, age_nyha_hf,
                 age_ablation,
                 age_stroke,age_htxvad, age_death,
                 sarc_status,

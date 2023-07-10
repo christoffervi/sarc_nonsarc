@@ -126,6 +126,7 @@ p4<-
   filter(time1>0) %>% 
   surv_fit(Surv(time1, event_af)~sarc_status, data = .) %>% broom::tidy() %>% 
   mutate(across(.cols = c(estimate, conf.low, conf.high), ~1-.x)) %>% 
+  filter(time<10.1) %>% 
   ggplot(aes(x=time, y= estimate, ymin = conf.low, ymax= conf.high, color = strata))+
   geom_line( show.legend=F)+
   geom_ribbon(aes(fill = strata, alpha = .2),show.legend=F)+
@@ -135,9 +136,12 @@ p4<-
   
   coord_cartesian(xlim = c(0,10), 
                   ylim= c(0,.25),
-                  expand = F)+
+                  expand = F, clip = 'off')+
   labs(x = "Years from first SHaRe visit",
-       y = "Cumulative incidence of atrial fibrillation")+
+       y = "Cumulative incidence")+
+  annotate('text',x=5,y=.27,label = "Atrial Fibrillation", family ='Roboto', fontface = 'bold',
+           size = 4.5, hjust = .5)+
+  
   scale_fill_scico_d()+
   scale_color_scico_d()+
   scale_x_continuous(breaks = seq(0,10,1))+
@@ -324,6 +328,7 @@ q4<-
   filter(time1>0) %>% 
   surv_fit(Surv(time1, event_vt)~sarc_status, data = .) %>% broom::tidy() %>% 
   mutate(across(.cols = c(estimate, conf.low, conf.high), ~1-.x)) %>% 
+  filter(time<10.1) %>% 
   ggplot(aes(x=time, y= estimate, ymin = conf.low, ymax= conf.high, color = strata))+
   geom_line( show.legend=F)+
   geom_ribbon(aes(fill = strata, alpha = .2),show.legend=F)+
@@ -337,9 +342,11 @@ q4<-
                             surv_fit(Surv(time1, event_vt)~sarc_status, data = .) %>% 
                             broom::tidy() %>% filter(time<=10) %>%
                             select(conf.low) %>% summarise(high = 1-min(conf.low)) %>% pull),
-                  expand = F)+
+                  expand = F, clip = 'off')+
   labs(x = "Years from first SHaRe visit",
-       y = "Cumulative incidence of VT (composite)")+
+       y = "Cumulative incidence")+
+  annotate('text',x=5,y=.095,label = "Composite Ventricular Arrhythmias", family ='Roboto', fontface = 'bold',
+           size = 4.5, hjust = .5)+
   scale_fill_scico_d()+
   scale_color_scico_d()+
   scale_x_continuous(breaks = seq(0,10,1))+
@@ -399,5 +406,5 @@ IIIJJJ"
 
 
 
-p4+q4+p5+q5+p1+q1+p2+q2+p3+q3+plot_layout(design = layout)+plot_annotation(tag_levels = list(c("A","B","","","C","D")))
-ggsave(filename = "both.pdf", device = cairo_pdf, height = 22, width = 30, units = "cm", dpi =2900)
+p4+q4+p5+q5+p1+q1+p2+q2+p3+q3+plot_layout(design = layout)+plot_annotation(tag_levels = list(c("A","C","","","B","D")))
+ggsave(filename = "both2.pdf", device = cairo_pdf, height = 22, width = 30, units = "cm", dpi =2900)
