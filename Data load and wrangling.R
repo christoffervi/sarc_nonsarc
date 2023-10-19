@@ -50,6 +50,10 @@ df<- d %>% filter(primary_diagnosis =="HCM") %>%
          echo_lvef = case_when(!is.na(echo_lvef0)~echo_lvef0,                                  !is.na(echo_lvef1)~echo_lvef1,                                  !is.na(echo_lvef2)~echo_lvef2,                                  !is.na(echo_lvef3)~echo_lvef3,
                                !is.na(echo_lvef4)~echo_lvef4,                                  !is.na(echo_lvef5)~echo_lvef5,                                  !is.na(echo_lvef6)~echo_lvef6,                                  !is.na(echo_lvef_zx)~echo_lvef_zx
          ),
+         echo_esc_risk_score = case_when(!is.na(echo_esc_risk_score0)~echo_esc_risk_score0,!is.na(echo_esc_risk_score1)~echo_esc_risk_score1,!is.na(echo_esc_risk_score2)~echo_esc_risk_score2, !is.na(echo_esc_risk_score3)~echo_esc_risk_score3,
+                                        !is.na(echo_esc_risk_score4)~echo_esc_risk_score4,!is.na(echo_esc_risk_score5)~echo_esc_risk_score5,!is.na(echo_esc_risk_score6)~echo_esc_risk_score6,!is.na(echo_esc_risk_scorex)~echo_esc_risk_scorex),
+         stress_mvo2 = case_when(!is.na(stress_mvo20)~stress_mvo20,!is.na(stress_mvo21)~stress_mvo21,!is.na(stress_mvo22)~stress_mvo22, !is.na(stress_mvo23)~stress_mvo23,
+                                         !is.na(stress_mvo24)~stress_mvo24,!is.na(stress_mvo2x)~stress_mvo2x),
          
          # Baseline findings at clinic visits
          sysbp = case_when(!is.na(clinic_visit_b_ps0)~clinic_visit_b_ps0,                           !is.na(clinic_visit_b_ps1)~clinic_visit_b_ps1,                           !is.na(clinic_visit_b_ps2)~clinic_visit_b_ps2,

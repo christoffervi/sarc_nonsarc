@@ -240,6 +240,7 @@ GGGHHH
 IIIJJJ"
 
 
+p4 +p1
 
 p4+q4+p5+q5+p1+q1+p2+q2+p3+q3+plot_layout(design = layout)+plot_annotation(tag_levels = list(c("A","B","","","C","D")))
 ggsave(filename = "both.pdf", device = cairo_pdf, height = 22, width = 30, units = "cm", dpi =2900)

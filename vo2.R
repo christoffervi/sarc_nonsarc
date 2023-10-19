@@ -1,12 +1,14 @@
 vo2_df<-
-  full_join(df %>% pivot_longer(contains("stress_mvo2")&!stress_mvo2x,
+  full_join(df  %>% 
+              select(!stress_mvo2) %>% 
+              pivot_longer(contains("stress_mvo2")&!stress_mvo2x,
                     names_to = "exam", values_to = "stress_mvo2") %>% 
-  mutate(r=row_number()) %>% select(pid,sex,exam,stress_mvo2,r),
+  mutate(r=row_number()) %>% select(pid,sex,exam,stress_mvo2,r) ,
 
 df  %>%  pivot_longer(contains("stress_age")&!stress_agex,
                       names_to = "stress_age",
                       values_to = "age")%>% 
-  mutate(r=row_number())) %>% 
+  mutate(r=row_number())%>% select(!stress_mvo2))  %>% 
   bind_cols(
 df  %>%  pivot_longer(contains("stress_ve_vco2_slope")&!stress_ve_vco2_slopex,
                       names_to = "stress_ve_vco2_slope",
@@ -351,3 +353,25 @@ vo2 %>%
   qqnorm.wally <- function(x, y, ...) { qqnorm(y, ...) ; abline(a=0, b=1) }
   MESS::wallyplot(lm(stress_mvo2~rcs(age,5)+sex+rcs(bmi,5)+af_c+rcs(rer,3)+sarc_status, data = vo2), FUN=qqnorm.wally, main="")
   
+  
+  
+  
+  
+  vo2 %>% 
+    filter(sarc_status%in% c("SARC(-)", "SARC(+)")) %>%  
+    mutate(pid = factor(pid)) %>% 
+    lme4::lmer(stress_mvo2~age+sarc_status+sex+bmi+af_c+rer+(1|pid), data = .) %>%  
+    gtsummary::tbl_regression()
+  
+  vo2 %>% 
+    filter(sarc_status%in% c("SARC(-)", "SARC(+)")) %>%  
+    mutate(pid = factor(pid)) %>% 
+    lme4::lmer(stress_mvo2~age+sarc_status+sex+bmi+af_c+rer+(1|pid), data = .) %>%  
+    lme4::fixef() %>% broom::tidy()
+  fixed_effect()
+  
+  vo2 %>% 
+    filter(sarc_status%in% c("SARC(-)", "SARC(+)")) %>%  
+    mutate(pid = factor(pid)) %>% 
+    lm(stress_mvo2~age+sarc_status+sex+bmi+af_c+rer, data = .) %>%  
+    gtsummary::tbl_regression()
