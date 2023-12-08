@@ -23,7 +23,7 @@ dfposneg %>%  #filter(fu_lvsd_cmp>=0) %>%
   gtsummary::bold_labels() %>% gtsummary::add_p() %>% 
   as_gt() %>% 
   gtExtras::gt_theme_nytimes() %>% 
-  tab_header("Mortality")  
+  tab_header("Table 2: All-cause and cause-specific mortality in sarcomeric and non-sarcomeric hypertrophic cardiomyopathy")  
    gtsave("vuffi.rtf")#%>%
   gtsave("mortality.doc")
   
@@ -94,5 +94,7 @@ library(epiR);library(epitools)
                               T~death_cause),
      event_hcm_death = if_else(death_causes %in% c("Sudden cardiac death","Heart failure"),1,0)) %>% 
    
-   janitor::tabyl(sarc_status, event_hcm_death) %>% fisher.test()
+   janitor::tabyl(sarc_status, event_hcm_death) %>% 
+   fisher.test()
+ 
  

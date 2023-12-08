@@ -1,4 +1,4 @@
-bf_cor <- 6*9-6
+bf_cor <- 1#6*9-6
 
 rbind(
   calculate_rr_age(dfneg, age_obesity, age_htn,bf_cor, T),
@@ -213,11 +213,11 @@ rbind(
           exposure = factor(exposure, levels = c("obesity (+)","htn (+)","obstruction (+)","af (+)",
                                                  "nyha_hf (+)","lvsd (+)","vt (+)"),
                             labels = c("Obesity","Hypertension","Obstruction","Atrial fibrillation",
-                                       "NYHA III-IV","LVSD","Composite VT")),
+                                       "NYHA III-IV","LVSD","Composite VA")),
           outcome = factor(outcome, levels = c("htn","obstruction","af",
                                                "nyha_hf","lvsd","vt", "stroke", "htxvad", "death"),
                            labels = c("Hypertension","Obstruction","Atrial <br> fibrillation",
-                                      "NYHA III-IV","LVSD","Composite VT",
+                                      "NYHA III-IV","LVSD","Composite VA",
                                       "Stroke", "Cardiac <br> transplantation", "Death")),
 term = factor(term, levels = c("SARC(+)", "SARC(-)"), 
                                labels = c("Sarcomeric HCM", "Non-Sarcomeric HCM"))
@@ -225,7 +225,7 @@ term = factor(term, levels = c("SARC(+)", "SARC(-)"),
 fig4_df
 x<-
   fig4_df%>% 
-  filter(!is.na(vuffi)| (exposure== "LVSD" &outcome== "Composite VT")| (exposure== "LVSD" &outcome== "Atrial <br> fibrillation")) %>%
+  filter(!is.na(vuffi)| (exposure== "LVSD" &outcome== "Composite VA")| (exposure== "LVSD" &outcome== "Atrial <br> fibrillation")) %>%
   mutate(size = if_else(!is.na(vuffi),1,0)) %>% 
   ggplot(aes(x=outcome, y=exposure, fill = -log10(p), label = vuffi_label))+
   geom_point(aes(size = size, alpha = size), shape = 21, show.legend = T, color = "white")+
@@ -236,7 +236,7 @@ x<-
   #ggsci::scale_fill_gsea()+
   #ggsci::scale_color_gsea()+
   ggsci::scale_color_material()+
-  ggsci::scale_fill_material(breaks = c(0,5,10,15,20,25))+
+  ggsci::scale_fill_material(breaks = c(0,10,15,20,25))+
   labs(x= "Outcome", y = "Exposure")+
   #scale_fill_scico()+
   #viridis::scale_fill_viridis(option = "H")+

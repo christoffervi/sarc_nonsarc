@@ -164,7 +164,9 @@ calculate_rr(dfposneg, event_htxvad, event_srt,12^2),
 calculate_rr(dfposneg, event_htxvad, event_ablation,12^2),
 calculate_rr(dfposneg, event_htxvad, event_af,12^2)
 ) %>% filter(!str_detect(rowname, "(-)")) %>% 
- # filter(rowname != "event_ablation (+)" &
+  filter(!(rowname %in% c("event_ablation (+)","event_htxvad (+)")),
+         term != "event_ablation") %>% 
+  #filter(rowname != "event_ablation (+)" &
   #         term != "event_ablation") %>% 
   mutate(p = if_else(p>1,1,p),
          p_di = if_else(p<.05,1,0),
@@ -173,8 +175,11 @@ calculate_rr(dfposneg, event_htxvad, event_af,12^2)
                            vuffi>2~round(vuffi,1),
                            T~vuffi),
          rowname = str_replace(rowname, "event_",""),
-         term = str_replace(term, "event_",""),) %>% 
-  ggplot(aes(x=term, y=rowname, fill = log2(.est), label = vuffi))+
+         term = str_replace(term, "event_",""),
+         fill_term = case_when(p<.0005~log2(.est),
+                               T~NA)) %>% 
+  ggplot(aes(x=term, y=rowname, fill = fill_term,#log2(.est), 
+             label = vuffi))+
   geom_tile(show.legend = F, color = "white")+
   geom_text(family = "Roboto")+
 #  scale_fill_scico(palette = "nuuk")

@@ -4,6 +4,12 @@ d<-
   #Making the dataset more pretty (all lowercase, spaces denoted by "_", etc.)
   janitor::clean_names() %>% rename_with(~gsub("dcc_", "", .))
 
+d<-
+  haven::read_dta("~/Dropbox/10 R/SHaRe/SHaRe_DCC_2023_08_08.dta") %>% 
+  #Making the dataset more pretty (all lowercase, spaces denoted by "_", etc.)
+  janitor::clean_names() %>% rename_with(~gsub("dcc_", "", .))
+
+
 # Only HCM patients
 df<- d %>% filter(primary_diagnosis =="HCM") %>% 
   #Computing events present at baseline and or diagnosis
@@ -54,6 +60,120 @@ df<- d %>% filter(primary_diagnosis =="HCM") %>%
                                         !is.na(echo_esc_risk_score4)~echo_esc_risk_score4,!is.na(echo_esc_risk_score5)~echo_esc_risk_score5,!is.na(echo_esc_risk_score6)~echo_esc_risk_score6,!is.na(echo_esc_risk_scorex)~echo_esc_risk_scorex),
          stress_mvo2 = case_when(!is.na(stress_mvo20)~stress_mvo20,!is.na(stress_mvo21)~stress_mvo21,!is.na(stress_mvo22)~stress_mvo22, !is.na(stress_mvo23)~stress_mvo23,
                                          !is.na(stress_mvo24)~stress_mvo24,!is.na(stress_mvo2x)~stress_mvo2x),
+         
+         # Baseline findings at clinic visits
+         sysbp = case_when(!is.na(clinic_visit_b_ps0)~clinic_visit_b_ps0,                           !is.na(clinic_visit_b_ps1)~clinic_visit_b_ps1,                           !is.na(clinic_visit_b_ps2)~clinic_visit_b_ps2,
+                           !is.na(clinic_visit_b_ps3)~clinic_visit_b_ps3,                           !is.na(clinic_visit_b_ps4)~clinic_visit_b_ps4,                           !is.na(clinic_visit_b_ps5)~clinic_visit_b_ps5,                           !is.na(clinic_visit_b_ps6)~clinic_visit_b_ps6,
+                           !is.na(clinic_visit_b_ps7)~clinic_visit_b_ps7,                           !is.na(clinic_visit_b_ps8)~clinic_visit_b_ps8,                           !is.na(clinic_visit_b_ps9)~clinic_visit_b_ps9,                           !is.na(clinic_visit_b_psx)~clinic_visit_b_psx
+         ),
+         diabp = case_when(!is.na(clinic_visit_b_pd0)~clinic_visit_b_pd0,                           !is.na(clinic_visit_b_pd1)~clinic_visit_b_pd1,                           !is.na(clinic_visit_b_pd2)~clinic_visit_b_pd2,                           !is.na(clinic_visit_b_pd3)~clinic_visit_b_pd3,
+                           !is.na(clinic_visit_b_pd4)~clinic_visit_b_pd4,                           !is.na(clinic_visit_b_pd5)~clinic_visit_b_pd5,                           !is.na(clinic_visit_b_pd6)~clinic_visit_b_pd6,                           !is.na(clinic_visit_b_pd7)~clinic_visit_b_pd7,
+                           !is.na(clinic_visit_b_pd8)~clinic_visit_b_pd8,                           !is.na(clinic_visit_b_pd9)~clinic_visit_b_pd9,                           !is.na(clinic_visit_b_pdx)~clinic_visit_b_pdx         ), 
+         bmi = case_when(!is.na(clinic_visit_bmi0)~clinic_visit_bmi0,                         !is.na(clinic_visit_bmi1)~clinic_visit_bmi1,                         !is.na(clinic_visit_bmi2)~clinic_visit_bmi2,                         !is.na(clinic_visit_bmi3)~clinic_visit_bmi3,
+                         !is.na(clinic_visit_bmi4)~clinic_visit_bmi4,                         !is.na(clinic_visit_bmi5)~clinic_visit_bmi5,                         !is.na(clinic_visit_bmi6)~clinic_visit_bmi6,                         !is.na(clinic_visit_bmi7)~clinic_visit_bmi7,
+                         !is.na(clinic_visit_bmi8)~clinic_visit_bmi8,                         !is.na(clinic_visit_bmi9)~clinic_visit_bmi9,                         !is.na(clinic_visit_bm_ix)~clinic_visit_bm_ix
+         ), 
+         #Obesity if baseline BMI above 30
+         obese = if_else(bmi>=30, 1, 0),
+         event_obesity = case_when(obese==1~1,
+                                   clinic_visit_bmi0>=30~1,
+                                   clinic_visit_bmi1>=30~1,
+                                   clinic_visit_bmi2>=30~1,
+                                   clinic_visit_bmi3>=30~1,
+                                   clinic_visit_bmi4>=30~1,
+                                   clinic_visit_bmi5>=30~1,
+                                   clinic_visit_bmi6>=30~1,
+                                   clinic_visit_bmi7>=30~1,
+                                   clinic_visit_bmi8>=30~1,
+                                   clinic_visit_bmi9>=30~1,
+                                   T~0
+         ),
+         age_obesity = case_when(obese==1~first_encounter_age,
+                                 clinic_visit_bmi0>=30~clinic_visit_age0,
+                                 clinic_visit_bmi1>=30~clinic_visit_age1,
+                                 clinic_visit_bmi2>=30~clinic_visit_age2,
+                                 clinic_visit_bmi3>=30~clinic_visit_age3,
+                                 clinic_visit_bmi4>=30~clinic_visit_age4,
+                                 clinic_visit_bmi5>=30~clinic_visit_age5,
+                                 clinic_visit_bmi6>=30~clinic_visit_age6,
+                                 clinic_visit_bmi7>=30~clinic_visit_age7,
+                                 clinic_visit_bmi8>=30~clinic_visit_age8,
+                                 clinic_visit_bmi9>=30~clinic_visit_age9,
+                                 T~NA_real_
+         ),
+         t2_obesity = if_else(is.na(age_obesity), last_encounter_age,age_obesity),
+         bsa = case_when(!is.na(clinic_visit_bsa0)~clinic_visit_bsa0,                         !is.na(clinic_visit_bsa1)~clinic_visit_bsa1,                         !is.na(clinic_visit_bsa2)~clinic_visit_bsa2,                         !is.na(clinic_visit_bsa3)~clinic_visit_bsa3,
+                         !is.na(clinic_visit_bsa4)~clinic_visit_bsa4,                         !is.na(clinic_visit_bsa5)~clinic_visit_bsa5,                         !is.na(clinic_visit_bsa6)~clinic_visit_bsa6,                         !is.na(clinic_visit_bsa7)~clinic_visit_bsa7,
+                         !is.na(clinic_visit_bsa8)~clinic_visit_bsa8,                         !is.na(clinic_visit_bsa9)~clinic_visit_bsa9,                         !is.na(clinic_visit_bs_ax)~clinic_visit_bs_ax
+         ), echo_lvidd_bsa = echo_lvidd/bsa,echo_lvids_bsa = echo_lvids/bsa,
+         nyha = case_when(!is.na(clinic_visit_nyha0)~clinic_visit_nyha0,                          !is.na(clinic_visit_nyha1)~clinic_visit_nyha1,                          !is.na(clinic_visit_nyha2)~clinic_visit_nyha2,                          !is.na(clinic_visit_nyha3)~clinic_visit_nyha3,
+                          !is.na(clinic_visit_nyha4)~clinic_visit_nyha4,                          !is.na(clinic_visit_nyha5)~clinic_visit_nyha5,                          !is.na(clinic_visit_nyha6)~clinic_visit_nyha6,                          !is.na(clinic_visit_nyha7)~clinic_visit_nyha7,
+                          !is.na(clinic_visit_nyha8)~clinic_visit_nyha8,                          !is.na(clinic_visit_nyha9)~clinic_visit_nyha9,                          !is.na(clinic_visit_nyh_ax)~clinic_visit_nyh_ax
+         ), nyha = factor(round(nyha,0)),
+         f_hx_scd = if_else(is.na(f_hx_scd_esc),"no", "yes"),
+         esc_risk = case_when(echo_esc_risk_score0>=6~"High",
+                              echo_esc_risk_score0>=4~"Moderate",
+                              echo_esc_risk_score0<=4~"Low",
+                              T~NA_character_))
+
+
+d<-
+  readr::read_csv("~/Dropbox/BWH SHaRe/SHaRe Dataset for Analysis/Excel-2023Q2/SHaRe_DCC.csv") %>% 
+  #Making the dataset more pretty (all lowercase, spaces denoted by "_", etc.)
+  janitor::clean_names() %>% rename_with(~gsub("dcc_", "", .))
+
+# Only HCM patients
+df<- d %>% filter(primary_diagnosis =="HCM") %>% 
+  #Computing events present at baseline and or diagnosis
+  mutate(htn = case_when(age_htn<=first_encounter_age~1,T~0),
+         af = case_when(age_arrhythmia_a_fib<=first_encounter_age~1,T~0),
+         SCD_aSCD = case_when(age_cardiac_arrest<=first_encounter_age~1,T~0),
+         nyha_hf = case_when(age_nyha_hf<=first_encounter_age~1,T~0),
+         stroke = case_when(age_stroke<=first_encounter_age~1,T~0),
+         obstruction = case_when(age_obstruction<=first_encounter_age~1,T~0),
+         lvsd = case_when(age_lvef50<=first_encounter_age~1,
+                          age_lvef50<=echo_age0~1,T~0),
+         severe_lvsd = case_when(age_lvef35<=first_encounter_age~1,
+                                 age_lvef35<=echo_age0~1,T~0),
+         syncope = case_when(age_syncope<=first_encounter_age~1,T~0),
+         t2_htxvad = pmin(t2_vad, t2_transplant, na.rm = T),event_htxvad = pmax(event_vad, event_transplant, na.rm = T), age_htxvad = pmin(age_vad, age_transplant, na.rm = T), #merging vad and HTX
+         t2_af = t2_arrhythmia_a_fib, event_af = event_arrhythmia_a_fib, age_af = age_arrhythmia_a_fib, # renaming af var
+         t2_lvsd = pmin(t2_lvef50, t2_lvef35, na.rm = T),event_lvsd = pmax(event_lvef50, event_lvef35, na.rm = T), age_lvsd = pmin(age_lvef50, age_lvef35, na.rm = T),
+         t2_vt = pmin(t2_composite_v_arrhythmia, t2_cardiac_arrest, na.rm = T), event_vt = pmax(event_composite_v_arrhythmia, event_cardiac_arrest, na.rm = T),age_vt = pmin(age_composite_v_arrhythmia, age_cardiac_arrest, na.rm = T), # a composite VT var including cardiac arrest
+         t2_hf = pmin(t2_lvsd,t2_htxvad, t2_composite_hf, t2_nyha_hf, t2_nyha_hf_systolic, na.rm = T), event_hf = pmax(event_lvsd,event_htxvad, event_composite_hf, event_nyha_hf, event_nyha_hf_systolic,na.rm=T), age_hf = pmin(age_lvsd,age_htxvad, age_composite_hf, age_nyha_hf, age_nyha_hf_systolic, na.rm = T),
+         age_ablation = case_when(event_ablation==1~t2_ablation,T~NA_real_),
+         
+         
+         #LGE
+         lge = case_when(cmri_lge0=="Yes"~"yes",
+                         cmri_lge0=="No"~"no",
+                         cmri_lge0=="no"~"no",
+                         T~NA_character_
+         ),
+         #Computing baseline echo measures
+         echo_la = case_when(!is.na(echo_la0)~echo_la0,                                !is.na(echo_la1)~echo_la1,                                !is.na(echo_la2)~echo_la2,                                !is.na(echo_la3)~echo_la3,
+                             !is.na(echo_la4)~echo_la4,                                !is.na(echo_la5)~echo_la5,                                !is.na(echo_la6)~echo_la6,                                !is.na(echo_l_ax)~echo_l_ax
+         ),
+         echo_lvidd = case_when(!is.na(echo_lvi_dd0)~echo_lvi_dd0,                                !is.na(echo_lvi_dd1)~echo_lvi_dd1,                                !is.na(echo_lvi_dd2)~echo_lvi_dd2,                                !is.na(echo_lvi_dd3)~echo_lvi_dd3,
+                                !is.na(echo_lvi_dd4)~echo_lvi_dd4,                                !is.na(echo_lvi_dd5)~echo_lvi_dd5,                                !is.na(echo_lvi_dd6)~echo_lvi_dd6,                                !is.na(echo_lvi_ddx)~echo_lvi_ddx
+         ),
+         echo_lvids = case_when(!is.na(echo_lvi_ds10)~echo_lvi_ds10,                                !is.na(echo_lvi_ds11)~echo_lvi_ds11,                                !is.na(echo_lvi_ds12)~echo_lvi_ds12,                                !is.na(echo_lvi_ds13)~echo_lvi_ds13,
+                                !is.na(echo_lvi_ds14)~echo_lvi_ds14,                                
+                                #!is.na(echo_lvi_ds15)~echo_lvi_ds15,                                !is.na(echo_lvi_ds16)~echo_lvi_ds16, 
+                                !is.na(echo_lvi_dsx)~echo_lvi_dsx
+         ),
+         echo_max_lvt = case_when(!is.na(echo_max_lvt0)~echo_max_lvt0,                                  !is.na(echo_max_lvt1)~echo_max_lvt1,  !is.na(echo_max_lvt2)~echo_max_lvt2,                                  !is.na(echo_max_lvt3)~echo_max_lvt3,
+                                  !is.na(echo_max_lvt4)~echo_max_lvt4,  !is.na(echo_max_lvt5)~echo_max_lvt5,!is.na(echo_max_lvt6)~echo_max_lvt6,
+                                  !is.na(echo_max_lvt7)~echo_max_lvt7,!is.na(echo_max_lvt8)~echo_max_lvt8,!is.na(echo_max_lvt9)~echo_max_lvt9,                                !is.na(echo_max_lvt6)~echo_max_lvt6,
+                                  !is.na(echo_max_lvt10)~echo_max_lvt10,!is.na(echo_max_lvt11)~echo_max_lvt11,!is.na(echo_max_lvt12)~echo_max_lvt12,
+                                  
+                                  !is.na(echo_max_lv_tx)~echo_max_lv_tx
+         ),
+         echo_lvot_gradient = case_when(!is.na(echo_lvot_gradient0)~echo_lvot_gradient0,!is.na(echo_lvot_gradient1)~echo_lvot_gradient1,!is.na(echo_lvot_gradient2)~echo_lvot_gradient2, !is.na(echo_lvot_gradient3)~echo_lvot_gradient3,
+                                        !is.na(echo_lvot_gradient4)~echo_lvot_gradient4,!is.na(echo_lvot_gradient5)~echo_lvot_gradient5,!is.na(echo_lvot_gradient6)~echo_lvot_gradient6,!is.na(echo_lvot_gradientx)~echo_lvot_gradientx),
+         echo_lvef = case_when(!is.na(echo_lvef0)~echo_lvef0,                                  !is.na(echo_lvef1)~echo_lvef1,                                  !is.na(echo_lvef2)~echo_lvef2,                                  !is.na(echo_lvef3)~echo_lvef3,
+                               !is.na(echo_lvef4)~echo_lvef4,                                  !is.na(echo_lvef5)~echo_lvef5,                                  !is.na(echo_lvef6)~echo_lvef6,                                  !is.na(echo_lvef_zx)~echo_lvef_zx
+         ),
          
          # Baseline findings at clinic visits
          sysbp = case_when(!is.na(clinic_visit_b_ps0)~clinic_visit_b_ps0,                           !is.na(clinic_visit_b_ps1)~clinic_visit_b_ps1,                           !is.na(clinic_visit_b_ps2)~clinic_visit_b_ps2,
@@ -333,114 +453,114 @@ hf<-
 ########
 
 # create a long dataset with relevant event-variables to rank the timing of events 
-df_longneg <- dfneg %>%
-  mutate(age_hcm = primary_diagnosis_age, # renaming variable
-         age_htxvad = pmin(age_vad, age_transplant, na.rm = T), #merging vad and HTX
-         age_af = age_arrhythmia_a_fib, # renaming af var
-         age_lvsd = pmin(age_lvef50, age_lvef35, na.rm = T),
-         age_vt = pmin(age_composite_v_arrhythmia, age_cardiac_arrest, na.rm = T), # a composite VT var including cardiac arrest
-         age_hf = pmin(age_lvsd,age_htxvad, age_composite_hf, age_nyha_hf, age_nyha_hf_systolic, na.rm = T),
-         age_hcm = case_when(is.na(age_hcm)~first_encounter_age,T~age_hcm)) %>%
-  dplyr::select(pid,primary_diagnosis_age,
-                age_hcm, age_htn,age_obstruction,age_srt,
-                age_af , age_vt, age_syncope,  age_icd,
-                age_hf,#age_lvsd, age_nyha_hf,
-                age_stroke,age_htxvad, age_death,
-                sarc_status,
-  ) %>%
-  pivot_longer(cols = starts_with("age_"),
-               names_to = "outcome",
-               values_to = "age") %>%
-  mutate(outcome = case_when(str_detect(outcome, "lvef")~"age_lvef50",
-                             str_detect(outcome, "age_vad")~"age_transplant",
-                             T~outcome)) %>%
-  drop_na() %>%
-  mutate(age = case_when(age==0~primary_diagnosis_age,
-                         T~age)) # remove rows with missing age values
-
-# group the dataset by patient ID and outcome, and calculate the rank of age within each group
-df_longneg <- df_longneg %>%
-  group_by(pid) %>%
-  mutate(rank = rank(age, ties.method = "first")) %>%
-  ungroup() %>% mutate(outcome = str_replace(outcome, "age_", "")) %>%
-  group_by(pid) %>% arrange(pid,rank) %>%
-  mutate(previous_event = ifelse(rank == 1, "share", lag(outcome))) %>%
-  ungroup() %>% select(sarc_status,pid,rank,previous_event,outcome,age)
-
-edges_df_neg <- df_longneg %>% group_by(previous_event,rank, outcome) %>%
-  summarise(n=n()) %>% ungroup() %>% arrange(rank,desc(n)) %>%
-  mutate(from = paste(rank, previous_event, sep = "_"),
-         to = paste(rank+1, outcome, sep = "_")
-  )
-nodes_df_neg <- edges_df_neg %>%  dplyr::select(from,to) %>%
-  pivot_longer(cols = everything(), values_to = "label") %>%
-  dplyr::select(label) %>% unique() %>%
-  mutate(source = row_number()-1,
-         name = str_remove(label, "[1234567890]"),
-         name = str_remove(name, "[0123456789]"),
-         name = str_remove(name, "_"))
-
-edges_df_neg <- edges_df_neg %>%
-  left_join(nodes_df, by = c("from" = "label")) %>%
-  left_join(rename(nodes_df, "target"="source"), by = c("to" = "label"))
-
-# #######
-# 
-# 
-# 
-# # create a long dataset with relevant event-variables to rank the timing of events 
-# df_longpos <- dfpos %>% 
+# df_longneg <- dfneg %>%
 #   mutate(age_hcm = primary_diagnosis_age, # renaming variable
 #          age_htxvad = pmin(age_vad, age_transplant, na.rm = T), #merging vad and HTX
 #          age_af = age_arrhythmia_a_fib, # renaming af var
 #          age_lvsd = pmin(age_lvef50, age_lvef35, na.rm = T),
 #          age_vt = pmin(age_composite_v_arrhythmia, age_cardiac_arrest, na.rm = T), # a composite VT var including cardiac arrest
 #          age_hf = pmin(age_lvsd,age_htxvad, age_composite_hf, age_nyha_hf, age_nyha_hf_systolic, na.rm = T),
-#          age_hcm = case_when(is.na(age_hcm)~first_encounter_age,T~age_hcm)) %>% 
+#          age_hcm = case_when(is.na(age_hcm)~first_encounter_age,T~age_hcm)) %>%
 #   dplyr::select(pid,primary_diagnosis_age,
 #                 age_hcm, age_htn,age_obstruction,age_srt,
 #                 age_af , age_vt, age_syncope,  age_icd,
-#                 age_hf,#age_lvsd, age_nyha_hf, 
+#                 age_hf,#age_lvsd, age_nyha_hf,
 #                 age_stroke,age_htxvad, age_death,
 #                 sarc_status,
-#   ) %>% 
-#   pivot_longer(cols = starts_with("age_"), 
+#   ) %>%
+#   pivot_longer(cols = starts_with("age_"),
 #                names_to = "outcome",
 #                values_to = "age") %>%
 #   mutate(outcome = case_when(str_detect(outcome, "lvef")~"age_lvef50",
 #                              str_detect(outcome, "age_vad")~"age_transplant",
-#                              T~outcome)) %>% 
-#   drop_na() %>% 
+#                              T~outcome)) %>%
+#   drop_na() %>%
 #   mutate(age = case_when(age==0~primary_diagnosis_age,
 #                          T~age)) # remove rows with missing age values
 # 
 # # group the dataset by patient ID and outcome, and calculate the rank of age within each group
-# df_longpos <- df_longpos %>% 
-#   group_by(pid) %>% 
+# df_longneg <- df_longneg %>%
+#   group_by(pid) %>%
 #   mutate(rank = rank(age, ties.method = "first")) %>%
-#   ungroup() %>% mutate(outcome = str_replace(outcome, "age_", "")) %>% 
-#   group_by(pid) %>% arrange(pid,rank) %>% 
-#   mutate(previous_event = ifelse(rank == 1, "share", lag(outcome))) %>% 
+#   ungroup() %>% mutate(outcome = str_replace(outcome, "age_", "")) %>%
+#   group_by(pid) %>% arrange(pid,rank) %>%
+#   mutate(previous_event = ifelse(rank == 1, "share", lag(outcome))) %>%
 #   ungroup() %>% select(sarc_status,pid,rank,previous_event,outcome,age)
 # 
-# edges_df_pos <- df_longpos %>% group_by(previous_event,rank, outcome) %>% 
-#   summarise(n=n()) %>% ungroup() %>% arrange(rank,desc(n)) %>% 
+# edges_df_neg <- df_longneg %>% group_by(previous_event,rank, outcome) %>%
+#   summarise(n=n()) %>% ungroup() %>% arrange(rank,desc(n)) %>%
 #   mutate(from = paste(rank, previous_event, sep = "_"),
 #          to = paste(rank+1, outcome, sep = "_")
 #   )
-# nodes_df_pos <- edges_df_pos %>%  dplyr::select(from,to) %>% 
-#   pivot_longer(cols = everything(), values_to = "label") %>% 
-#   dplyr::select(label) %>% unique() %>% 
+# nodes_df_neg <- edges_df_neg %>%  dplyr::select(from,to) %>%
+#   pivot_longer(cols = everything(), values_to = "label") %>%
+#   dplyr::select(label) %>% unique() %>%
 #   mutate(source = row_number()-1,
 #          name = str_remove(label, "[1234567890]"),
 #          name = str_remove(name, "[0123456789]"),
 #          name = str_remove(name, "_"))
 # 
-# edges_df_pos <- edges_df_pos %>% 
-#   left_join(nodes_df, by = c("from" = "label")) %>% 
+# edges_df_neg <- edges_df_neg %>%
+#   left_join(nodes_df, by = c("from" = "label")) %>%
 #   left_join(rename(nodes_df, "target"="source"), by = c("to" = "label"))
-
-
+# 
+# # #######
+# # 
+# # 
+# # 
+# # # create a long dataset with relevant event-variables to rank the timing of events 
+# # df_longpos <- dfpos %>% 
+# #   mutate(age_hcm = primary_diagnosis_age, # renaming variable
+# #          age_htxvad = pmin(age_vad, age_transplant, na.rm = T), #merging vad and HTX
+# #          age_af = age_arrhythmia_a_fib, # renaming af var
+# #          age_lvsd = pmin(age_lvef50, age_lvef35, na.rm = T),
+# #          age_vt = pmin(age_composite_v_arrhythmia, age_cardiac_arrest, na.rm = T), # a composite VT var including cardiac arrest
+# #          age_hf = pmin(age_lvsd,age_htxvad, age_composite_hf, age_nyha_hf, age_nyha_hf_systolic, na.rm = T),
+# #          age_hcm = case_when(is.na(age_hcm)~first_encounter_age,T~age_hcm)) %>% 
+# #   dplyr::select(pid,primary_diagnosis_age,
+# #                 age_hcm, age_htn,age_obstruction,age_srt,
+# #                 age_af , age_vt, age_syncope,  age_icd,
+# #                 age_hf,#age_lvsd, age_nyha_hf, 
+# #                 age_stroke,age_htxvad, age_death,
+# #                 sarc_status,
+# #   ) %>% 
+# #   pivot_longer(cols = starts_with("age_"), 
+# #                names_to = "outcome",
+# #                values_to = "age") %>%
+# #   mutate(outcome = case_when(str_detect(outcome, "lvef")~"age_lvef50",
+# #                              str_detect(outcome, "age_vad")~"age_transplant",
+# #                              T~outcome)) %>% 
+# #   drop_na() %>% 
+# #   mutate(age = case_when(age==0~primary_diagnosis_age,
+# #                          T~age)) # remove rows with missing age values
+# # 
+# # # group the dataset by patient ID and outcome, and calculate the rank of age within each group
+# # df_longpos <- df_longpos %>% 
+# #   group_by(pid) %>% 
+# #   mutate(rank = rank(age, ties.method = "first")) %>%
+# #   ungroup() %>% mutate(outcome = str_replace(outcome, "age_", "")) %>% 
+# #   group_by(pid) %>% arrange(pid,rank) %>% 
+# #   mutate(previous_event = ifelse(rank == 1, "share", lag(outcome))) %>% 
+# #   ungroup() %>% select(sarc_status,pid,rank,previous_event,outcome,age)
+# # 
+# # edges_df_pos <- df_longpos %>% group_by(previous_event,rank, outcome) %>% 
+# #   summarise(n=n()) %>% ungroup() %>% arrange(rank,desc(n)) %>% 
+# #   mutate(from = paste(rank, previous_event, sep = "_"),
+# #          to = paste(rank+1, outcome, sep = "_")
+# #   )
+# # nodes_df_pos <- edges_df_pos %>%  dplyr::select(from,to) %>% 
+# #   pivot_longer(cols = everything(), values_to = "label") %>% 
+# #   dplyr::select(label) %>% unique() %>% 
+# #   mutate(source = row_number()-1,
+# #          name = str_remove(label, "[1234567890]"),
+# #          name = str_remove(name, "[0123456789]"),
+# #          name = str_remove(name, "_"))
+# # 
+# # edges_df_pos <- edges_df_pos %>% 
+# #   left_join(nodes_df, by = c("from" = "label")) %>% 
+# #   left_join(rename(nodes_df, "target"="source"), by = c("to" = "label"))
+# 
+# 
 
 ########
 ###
@@ -1143,6 +1263,7 @@ pair_df<-
          exposure = str_replace(exposure, '\\+', ""),
          exposure = str_replace(exposure, '\\)', ""),
          pair = paste(exposure,outcome, sep = ""))%>% select(pair,sarc_status,.est,.lower,.upper,p)
+
 
 pairs_df<-
   pairs %>% left_join(pair_df)

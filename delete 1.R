@@ -144,7 +144,7 @@ rbind(
   calculate_rr_age(dfneg, age_htxvad, age_srt,bf_cor, T),
   calculate_rr_age(dfneg, age_htxvad, age_ablation,bf_cor, T),
   calculate_rr_age(dfneg, age_htxvad, age_af,bf_cor, T)
-) %>% filter(!str_detect(rowname, "(-)")) %>% 
+) %>% filter(!str_detect(exposure, "(-)")) %>% 
   mutate(p = if_else(p>1,1,p),
          p_di = if_else(p<.05,1,0),
          vuffi = if_else(p<0.05, round(.est,2), NA),
@@ -152,8 +152,8 @@ rbind(
                            vuffi>2~round(vuffi,1),
                            vuffi>1~vuffi,
                            T~NA),
-         rowname = str_replace(rowname, "age_",""),
-         term = str_replace(term, "age_",""),
+         exposure = str_replace(exposure, "age_",""),
+         outcome = str_replace(outcome, "age_",""),
          sarc_status = "SARC(-)"),
 
 
@@ -302,9 +302,9 @@ rbind(
   calculate_rr_age(dfpos, age_htxvad, age_srt,bf_cor, T),
   calculate_rr_age(dfpos, age_htxvad, age_ablation,bf_cor, T),
   calculate_rr_age(dfpos, age_htxvad, age_af,bf_cor, T)
-) %>% filter(!str_detect(rowname, "(-)")) %>% 
-  # filter(rowname != "age_ablation (+)" &
-  #         term != "age_ablation") %>% 
+) %>% filter(!str_detect(exposure, "(-)")) %>% 
+  # filter(exposure != "age_ablation (+)" &
+  #         outcome != "age_ablation") %>% 
   mutate(p = if_else(p>1,1,p),
          p_di = if_else(p<.05,1,0),
          vuffi = if_else(p<0.05, round(.est,2), NA),
@@ -312,10 +312,10 @@ rbind(
                            vuffi>2~round(vuffi,1),
                            vuffi>1~vuffi,
                            T~NA),
-         rowname = str_replace(rowname, "age_",""),
-         term = str_replace(term, "age_",""),
+         exposure = str_replace(exposure, "age_",""),
+         outcome = str_replace(outcome, "age_",""),
          sarc_status = "SARC(+)"))) %>% 
-  ggplot(aes(x=term, y=rowname, fill = log2(.est), label = vuffi))+
+  ggplot(aes(x=outcome, y=exposure, fill = log2(.est), label = vuffi))+
   geom_tile(show.legend = F, color = "white")+
   geom_text(family = "Roboto")+
   #  scale_fill_scico(palette = "nuuk")

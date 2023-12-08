@@ -87,6 +87,6 @@ term = fct_rev(term)) %>%
                                                 ), family= "Roboto", size = 3, fontface = "bold", vjust = .33)+
   annotate("text", x= c(.9,1.1), y= 16, label = c("Higher in \n non-sarcomeric HCM", "Higher in \n sarcomeric HCM"), family= "Roboto", size = 3, fontface = "bold", hjust = c(1,0), vjust =0)+
   coord_cartesian(xlim = c(.4,12), ylim=c(.6,17), expand = F, clip = "off")
-ggsave(filename = "RR2.pdf", device = cairo_pdf, height = 16, width = 20, units = "cm", dpi =2900)    
+ggsave(filename = "RR2 2023Q2.pdf", device = cairo_pdf, height = 16, width = 20, units = "cm", dpi =2900)    
 
-ggsave(filename = "RR2.tiff", compression = "lzw", height = 16*.75, width = 24*.75, units = "cm", dpi =2200)    
+ggsave(filename = "RR2 2023Q2.tiff", compression = "lzw", height = 16*.75, width = 24*.75, units = "cm", dpi =2200)    
