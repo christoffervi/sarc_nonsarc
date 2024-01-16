@@ -19,7 +19,8 @@ rr_p <- function(data, exposure, event,term) {
 rr_df<-
   rbind(rr_func(dfposneg, sarc_status, event_death, "All-cause mortality"),
         rr_func(dfposneg, sarc_status, obese, "Obesity"),
-        rr_func(dfposneg, sarc_status, event_ablation, "Ablation"),
+        rr_func(dfposneg, sarc_status, event_hcm_death, "HCM-related mortality"),
+      #  rr_func(dfposneg, sarc_status, event_ablation, "Ablation"),
         rr_func(dfposneg, sarc_status, event_arrhythmia_a_fib, "Atrial Fibrillation"),
         rr_func(dfposneg, sarc_status, event_arrhythmia_nsvt, "NSVT"),
         rr_func(dfposneg, sarc_status, event_cardiac_arrest, "Cardiac Arrest"),
@@ -36,7 +37,8 @@ rr_df<-
   left_join( 
     bind_rows(rr_p(dfposneg, sarc_status, event_death, "All-cause mortality"),
               rr_p(dfposneg, sarc_status, obese, "Obesity"),
-              rr_p(dfposneg, sarc_status, event_ablation, "Ablation"),
+              rr_p(dfposneg, sarc_status, event_hcm_death, "HCM-related mortality"),
+              #rr_p(dfposneg, sarc_status, event_ablation, "Ablation"),
               rr_p(dfposneg, sarc_status, event_arrhythmia_a_fib, "Atrial Fibrillation"),
               rr_p(dfposneg, sarc_status, event_arrhythmia_nsvt, "NSVT"),
               rr_p(dfposneg, sarc_status, event_cardiac_arrest, "Cardiac Arrest"),
@@ -58,8 +60,10 @@ rr_df %>% mutate(.est = if_else(rowname=="sarc(-)",NA,.est),
 ) %>% 
   #  filter(term !="Cardiac transplantation") %>% 
   mutate(term = fct_reorder(term, desc(.est)),
-         term = fct_relevel(term, "Hypertension", "Obstruction", "Obesity", "SRT", "NYHA III-IV", "nyha_hf", "Stroke", "Composite HF", "All-cause mortality", "Atrial Fibrillation",
-                            "NSVT", "Cardiac Arrest", "Ablation", "ICD implantation", "LVEF ≤50", "LVEF ≤35", "LVSD", "Composite VA"), 
+         term = fct_relevel(term, "Hypertension", "Obstruction", "Obesity", "SRT", "NYHA III-IV", "nyha_hf", "Stroke", "Composite HF", 
+                            "All-cause mortality", "HCM-related mortality" , 
+                            "Atrial Fibrillation",
+                            "NSVT", "Cardiac Arrest", "ICD implantation", "LVEF ≤50", "LVEF ≤35", "LVSD", "Composite VA"), 
          term = fct_rev(term)) %>% 
   ggplot(aes(y= term, x= .est, xmin = .lower, xmax = .upper, fill = log(.est^(1/3))))+
   

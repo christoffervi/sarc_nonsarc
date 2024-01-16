@@ -52,10 +52,10 @@ fig_df<-
                              outcome =="nyha_hf"~"NYHA III-IV",
                              outcome =="srt"~"Septal reduction therapy",
                              outcome =="stroke"~"Stroke",
-                             outcome =="vt"~"Ventricular tachycardia",
+                             outcome =="vt"~"Composite ventricular arrhythmia",
                              outcome =="lvsd"~"LV systolic dysfunction",
                              outcome =="htxvad"~"Cardiac transplantation",
-                             outcome =="death"~"Death",
+                             outcome =="death"~"All-cause mortality",
                              outcome =='hcm'~'HCM diagnosis',
                              T~outcome
          ),
@@ -65,8 +65,8 @@ fig_df<-
   
   # filter(abs(age)<20) %>% 
   filter(feature %in% c('HCM diagnosis',
-                        "Atrial fibrillation", "NYHA III-IV", "Ventricular tachycardia", 
-                        "LV systolic dysfunction", "Cardiac transplantation", "Death"))
+                        "Atrial fibrillation", "NYHA III-IV", "Composite ventricular arrhythmia", 
+                        "LV systolic dysfunction", "Cardiac transplantation", "All-cause mortality"))
 
 fig_df %>% 
   filter(age>0) %>% 
@@ -101,7 +101,7 @@ ggsave(filename = "Figure 3- age alternative2.pdf", device = cairo_pdf, height =
 
 
 fig_df %>% 
-  mutate(feature1 = fct_relevel(feature, 'HCM diagnosis', "Ventricular tachycardia", "Cardiac transplantation",
+  mutate(feature1 = fct_relevel(feature, 'HCM diagnosis', "Composite ventricular arrhythmia", "Cardiac transplantation",
                                 "LV systolic dysfunction", "Atrial fibrillation","NYHA III-IV")) %>% 
   filter(age>0) %>% 
   ggplot()+

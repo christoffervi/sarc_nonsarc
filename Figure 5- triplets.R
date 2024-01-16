@@ -114,7 +114,7 @@ triplets %>%
   geom_segment(color= "black")+
   scale_y_discrete(breaks = seq(0,25,1))+
   scale_x_continuous(breaks = seq(0,70,2))+
-  scale_color_manual(name=NULL ,values = c(ggsci::pal_jama()(7)))+
+  #scale_color_manual(name=NULL ,values = c(ggsci::pal_jama()(7)))+
   
   labs(x= "Mean age at occurence",
        y= "")+

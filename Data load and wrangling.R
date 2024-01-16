@@ -364,7 +364,13 @@ dftested <- df %>% filter(sarc_status %in% c("SARC(+)",
                                              "SARC(U)",
                                              "SARC(-)",
                                              "HCM(genocopy)"))
-dfposneg <- df %>% filter(sarc_status %in% c("SARC(-)","SARC(+)"))
+dfposneg <- df %>% filter(sarc_status %in% c("SARC(-)","SARC(+)")) %>% 
+  mutate(death_causes = case_when(str_detect(death_cause, "Non-Card|Infect|Unkn|Proce|Acci|GI")~"Non-cardiovascular death",
+                             str_detect(death_cause, "SCD")~"Sudden cardiac death",
+                             str_detect(death_cause, "Myoca|Cardio|CAD")~"Other cardiovascular death",
+                             str_detect(death_cause, "Fail|HCM")~"Heart failure",
+                             T~death_cause),
+    event_hcm_death = if_else(death_causes %in% c("Sudden cardiac death","Heart failure", "Stroke"),1,0))
 
 # create a long dataset with relevant event-variables to rank the timing of events 
 df_long <- dfposneg %>%
