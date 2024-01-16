@@ -693,9 +693,9 @@ chris_hr_time_double_event <- function(data, id, start,
         coxph(Surv(fu_begin, fu_end, event) ~ var+other, data = .) %>% 
         broom::tidy(exponentiate = TRUE, conf.int = TRUE) %>% 
         mutate(
-          term = str_replace(term, 'var', paste(name1, name2)),
+          term = str_replace(term, 'var', paste(name1,'to', name2)),
           term = str_replace(term, "event_", ""),
-          term = str_replace(term, "interaction", ""),
+          term = str_replace(term, "event_", ""),
           outcome = name3,
           outcome = str_replace(outcome, "event_", "")
         )
@@ -705,7 +705,8 @@ chris_hr_time_double_event <- function(data, id, start,
         coxph(Surv(tstart, tstop, event) ~ var+other, data = .) %>% 
         broom::tidy(exponentiate = TRUE, conf.int = TRUE) %>% 
         mutate(
-          term = str_replace(term, 'var', paste(name1, name2)),
+          term = str_replace(term, 'var', paste(name1, 'to', name2)),
+          term = str_replace(term, "event_", ""),
           term = str_replace(term, "event_", ""),
           outcome = name3,
           outcome = str_replace(outcome, "event_", "")
