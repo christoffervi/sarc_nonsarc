@@ -670,9 +670,9 @@ chris_hr_time_double_event <- function(data, id, start,
   
   # Filter data based on the condition
   df <- data %>% filter(time3 > start) %>% 
-    mutate(double_event = case_when(event1+event2==2 & time2<=time1~1,
+    mutate(double_event = case_when(event1+event2==2 & time2>=time1~1,
                                     T~0),
-           double_time = case_when(event1+event2==2 & time2<=time1~time2,
+           double_time = case_when(event1+event2==2 & time2>=time1~time2,
                                    T~time3))
   
   # Perform survival analysis using tmerge and coxph functions
@@ -713,3 +713,94 @@ chris_hr_time_double_event <- function(data, id, start,
         )
     }
   }
+
+
+################
+
+
+##################
+chris_hr_time_double_event_bidirection <- function(data, id, start, 
+                                       time1, event1, 
+                                       time2, event2, 
+                                       time3, event3,type = 'fu',
+                                       other = sex) {
+  
+  # Convert input parameters to quosures
+  id <- enquo(id)
+  start <- enquo(start)
+  event1 <- enquo(event1)
+  event2 <- enquo(event2)
+  event3 <- enquo(event3)
+  time1 <- enquo(time1)
+  time2 <- enquo(time2)
+  time3 <- enquo(time3)
+  
+  # Convert quosure to labels
+  name1 <- as_label(event1)
+  name2 <- as_label(event2)
+  name3 <- as_label(event3)
+  name_start <- as_label(start)
+  
+  {
+    # Select relevant columns from the input data
+    data <- {{data}} %>%
+      dplyr::select(
+        id = {{id}},
+        start = {{start}},
+        event1 = {{event1}},
+        event2 = {{event2}},
+        event3 = {{event3}},
+        time1 = {{time1}},
+        time2 = {{time2}},
+        time3 = {{time3}},
+        stop = {{time3}},
+        other = {{other}}
+      )
+  }
+  
+  # Filter data based on the condition
+  df <- data %>% filter(time3 > start) %>% 
+    mutate(double_event = case_when(event1+event2==2~1,
+                                    T~0),
+           double_time = case_when(event1+event2==2 & time2>=time1~time2,
+                                   event1+event2==2 & time2<=time1~time1,
+                                   T~time3))
+  
+  # Perform survival analysis using tmerge and coxph functions
+  df_new <- survival::tmerge(df, df, id,
+                             var = tdc(double_time, double_event, 0),
+                             event = event(time3, event3),
+                             tstop = time3,
+                             tstart = start
+  ) %>%
+    mutate(
+      fu = tstop - tstart,
+      fu_begin = tstart - start,
+      fu_end = tstop - start
+    )
+  if (type == "fu") {
+    # Perform Cox proportional hazards regression analysis for follow-up time
+    df_new %>% 
+      coxph(Surv(fu_begin, fu_end, event) ~ var+other, data = .) %>% 
+      broom::tidy(exponentiate = TRUE, conf.int = TRUE) %>% 
+      mutate(
+        term = str_replace(term, 'var', paste(name1,'to', name2)),
+        term = str_replace(term, "event_", ""),
+        term = str_replace(term, "event_", ""),
+        outcome = name3,
+        outcome = str_replace(outcome, "event_", "")
+      )
+  } else {
+    # Perform Cox proportional hazards regression analysis for full time
+    df_new %>% 
+      coxph(Surv(tstart, tstop, event) ~ var+other, data = .) %>% 
+      broom::tidy(exponentiate = TRUE, conf.int = TRUE) %>% 
+      mutate(
+        term = str_replace(term, 'var', paste(name1, 'to', name2)),
+        term = str_replace(term, "event_", ""),
+        term = str_replace(term, "event_", ""),
+        outcome = name3,
+        outcome = str_replace(outcome, "event_", "")
+      )
+  }
+}
