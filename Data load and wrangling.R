@@ -583,12 +583,13 @@ df_long <- df %>%
          age_ablation = case_when(event_ablation==1~t2_ablation,T~NA_real_),
   ) %>%
   dplyr::select(pid,primary_diagnosis_age,
-                age_hcm, 
-                age_htn,age_obstruction,age_srt,
-                age_af , age_vt, age_syncope,  age_icd,
-                age_hf,
+                #age_hcm, 
+                age_obesity,
+                age_htn,age_obstruction,#age_srt,
+                age_af , age_vt, #age_syncope,  age_icd,
+                #age_hf,
                 age_lvsd, age_nyha_hf,
-                age_ablation,
+                #age_ablation,
                 age_stroke,age_htxvad, age_death,
                 sarc_status,
   ) %>%
@@ -644,7 +645,7 @@ trio <-
          vuf4 = paste(outcome_4,outcome_5,outcome_6,age_4,age_5,age_6, sep = ";"),
          vuf5 = paste(outcome_5,outcome_6,outcome_7,age_5,age_6,age_7, sep = ";"),
          vuf6 = paste(outcome_6,outcome_7,outcome_8,age_6,age_7,age_8, sep = ";"),
-         vuf7 = paste(outcome_7,outcome_8,outcome_9,age_7,age_8,age_9, sep = ";"),
+         #vuf7 = paste(outcome_7,outcome_8,outcome_9,age_7,age_8,age_9, sep = ";"),
          #   vuf8 = paste(outcome_8,outcome_9,outcome_10,age_8,age_9,age_10, sep = ";"),
          #         vuf9 = paste(outcome_9,outcome_10,outcome_11,age_9,age_10,age_11, sep = ";")
          #vuf10 = paste(outcome_10,outcome_11,age_11)
@@ -678,7 +679,7 @@ pairs <-
          vuf5 = paste(outcome_5,outcome_6,age_5,age_6, sep = ";"),
          vuf6 = paste(outcome_6,outcome_7,age_6,age_7, sep = ";"),
          vuf7 = paste(outcome_7,outcome_8,age_7,age_8, sep = ";"),
-         vuf8 = paste(outcome_8,outcome_9,age_8,age_9, sep = ";"),
+         #vuf8 = paste(outcome_8,outcome_9,age_8,age_9, sep = ";"),
          #         vuf9 = paste(outcome_9,outcome_10,age_9,age_10, sep = ";"),
          #vuf10 = paste(outcome_10,outcome_11,age_11)
   ) %>% #select(contains("vuf"))
@@ -1275,3 +1276,66 @@ pairs_df<-
   pairs %>% left_join(pair_df)
 #############
 
+
+trio_pos <-
+  df_long %>% 
+  filter(sarc_status %in% c("SARC(+)")) %>% 
+  select(!previous_event) %>% 
+  pivot_wider(names_from = rank, values_from = c(outcome, age)) %>%
+  mutate(vuf1 = paste(outcome_1,outcome_2,outcome_3,age_1,age_2,age_3, sep = ";"),
+         vuf2 = paste(outcome_2,outcome_3,outcome_4,age_2,age_3,age_4, sep = ";"),
+         vuf3 = paste(outcome_3,outcome_4,outcome_5,age_3,age_4,age_5, sep = ";"),
+         vuf4 = paste(outcome_4,outcome_5,outcome_6,age_4,age_5,age_6, sep = ";"),
+         vuf5 = paste(outcome_5,outcome_6,outcome_7,age_5,age_6,age_7, sep = ";"),
+         vuf6 = paste(outcome_6,outcome_7,outcome_8,age_6,age_7,age_8, sep = ";"),
+         #vuf7 = paste(outcome_7,outcome_8,outcome_9,age_7,age_8,age_9, sep = ";"),
+         #   vuf8 = paste(outcome_8,outcome_9,outcome_10,age_8,age_9,age_10, sep = ";"),
+         #         vuf9 = paste(outcome_9,outcome_10,outcome_11,age_9,age_10,age_11, sep = ";")
+         #vuf10 = paste(outcome_10,outcome_11,age_11)
+  ) %>% #select(contains("vuf"))
+  pivot_longer(cols = contains("vuf")) %>% select(pid,sarc_status,value) %>% 
+  separate(col = value, into = c("source", "to", "destination", "age1", "age2", "age3"),sep = ";") %>% 
+  mutate(across(c(age1, age2, age3), ~as.numeric(.x)),
+         triplet = paste(source,to,destination),
+         time_lag1 = age2-age1,
+         time_lag2 = age3-age2) %>% drop_na() %>%
+  # filter(time_lag1<10) %>% 
+  #filter(time_lag2<10) %>% 
+  group_by(triplet) %>% 
+  summarise(n= n(), age1 = mean(age1), age2 = mean(age2), age3 = mean(age3), .groups = "drop") %>% 
+  separate(triplet, into = c("source","to", "destination"), sep = " ") %>%
+  mutate(triplet = paste(source,to,destination)) %>% 
+  group_by(triplet) %>% mutate(triplet_frequency =sum(n)) %>% ungroup() %>% 
+  arrange(desc(n))
+
+###
+trio_neg <-
+df_long %>% 
+  filter(sarc_status %in% c("SARC(-)")) %>% 
+  select(!previous_event) %>% 
+  pivot_wider(names_from = rank, values_from = c(outcome, age)) %>%
+  mutate(vuf1 = paste(outcome_1,outcome_2,outcome_3,age_1,age_2,age_3, sep = ";"),
+         vuf2 = paste(outcome_2,outcome_3,outcome_4,age_2,age_3,age_4, sep = ";"),
+         vuf3 = paste(outcome_3,outcome_4,outcome_5,age_3,age_4,age_5, sep = ";"),
+         vuf4 = paste(outcome_4,outcome_5,outcome_6,age_4,age_5,age_6, sep = ";"),
+         vuf5 = paste(outcome_5,outcome_6,outcome_7,age_5,age_6,age_7, sep = ";"),
+         vuf6 = paste(outcome_6,outcome_7,outcome_8,age_6,age_7,age_8, sep = ";"),
+         #vuf7 = paste(outcome_7,outcome_8,outcome_9,age_7,age_8,age_9, sep = ";"),
+         #   vuf8 = paste(outcome_8,outcome_9,outcome_10,age_8,age_9,age_10, sep = ";"),
+         #         vuf9 = paste(outcome_9,outcome_10,outcome_11,age_9,age_10,age_11, sep = ";")
+         #vuf10 = paste(outcome_10,outcome_11,age_11)
+  ) %>% #select(contains("vuf"))
+  pivot_longer(cols = contains("vuf")) %>% select(pid,sarc_status,value) %>% 
+  separate(col = value, into = c("source", "to", "destination", "age1", "age2", "age3"),sep = ";") %>% 
+  mutate(across(c(age1, age2, age3), ~as.numeric(.x)),
+         triplet = paste(source,to,destination),
+         time_lag1 = age2-age1,
+         time_lag2 = age3-age2) %>% drop_na() %>%
+  # filter(time_lag1<10) %>% 
+  #filter(time_lag2<10) %>% 
+  group_by(triplet) %>% 
+  summarise(n= n(), age1 = mean(age1), age2 = mean(age2), age3 = mean(age3), .groups = "drop") %>% 
+  separate(triplet, into = c("source","to", "destination"), sep = " ") %>%
+  mutate(triplet = paste(source,to,destination)) %>% 
+  group_by(triplet) %>% mutate(triplet_frequency =sum(n)) %>% ungroup() %>% 
+  arrange(desc(n))
