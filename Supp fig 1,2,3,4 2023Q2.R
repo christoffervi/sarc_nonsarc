@@ -581,7 +581,7 @@ q4<-
                   expand = F, clip = 'off')+
   labs(x = "Years from first SHaRe visit",
        y = "Cumulative incidence")+
-  annotate('text',x=5,y=.095,label = "Composite Ventricular Arrhythmias", family ='Roboto', fontface = 'bold',
+  annotate('text',x=5,y=.085,label = "Composite Ventricular Arrhythmias", family ='Roboto', fontface = 'bold',
            size = 4.5, hjust = .5)+
   scale_fill_scico_d()+
   scale_color_scico_d()+
@@ -794,6 +794,9 @@ q4<-
   annotate("text", x= 7.8, y = c(0.257, 0.425), label = c("Sarc+", "Sarc-"),
            color =scico(2, palette = "batlow", direction = -1), angle= 25,
            family = "Roboto")+
+  annotate('text',x=5,y=.125,label = "Left ventricular systolic dysfunction", family ='Roboto', fontface = 'bold',
+           size = 4.5, hjust = .5)+
+  
   coord_cartesian(xlim = c(0,10),
                   ylim= c(0,hf %>%
                             mutate(time1 = t2_lvsd-echo_age0 ) %>%
