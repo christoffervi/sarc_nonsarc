@@ -41,7 +41,9 @@ q1<-
   geom_errorbar(position = position_dodge(width = .3), width = .1)+
   geom_point(position = position_dodge(width = .3), shape = c(21,21,21,21,21,21,21,21,21,21,22,22), size = 4,
              show.legend = F)+
-  scale_fill_scico_d(palette = "batlow")+
+  scale_color_manual(values = chris_colors_3[2:3])+
+  scale_fill_manual(values = chris_colors_3[2:3])+
+#  scale_fill_scico_d(palette = "batlow")+
   scale_y_continuous(n.breaks = 6)+
   coord_cartesian(xlim = c(.6,6.4), ylim = c(-0,trunc(max(dat.df$upper)*1000)+.1), expand = F, clip = "off")+
   annotate("text", x= c(5.17,4.83), y = c(dat.df$est[9]*1000,dat.df$est[10]*1000+.1),
@@ -110,7 +112,9 @@ q2<-
   ggplot(aes(x= agegroup, y= sarc_status, group = sarc_status, fill = sarc_status))+
   geom_text(aes(label = round(nyear,0)), size = 3.5,
             show.legend = F,family = "Roboto")+
-  scale_color_scico_d(palette = "batlow")+
+  scale_color_manual(values = chris_colors_3[2:3])+
+  scale_fill_manual(values = chris_colors_3[2:3])+
+#    scale_color_scico_d(palette = "batlow")+
   coord_cartesian(xlim = c(.6,6.4), ylim = c(0,2.4), expand = F, clip = "off")+
   geom_segment(aes(x= .7,xend=.8,y=sarc_status, yend = sarc_status, color = sarc_status), show.legend = F, linewidth=2)+
   annotate("text", x= c(.6), y = c(2.6),family = "Roboto", fontface = "bold",
@@ -156,8 +160,10 @@ q4<-
                   expand = F, clip = "off")+
   labs(x = "Years from first SHaRe visit",
        y = "Cumulative incidence of LV obstruction")+
-  scale_fill_scico_d()+
-  scale_color_scico_d()+
+  scale_color_manual(values = chris_colors_3[2:3])+
+  scale_fill_manual(values = chris_colors_3[2:3])+
+  #scale_fill_scico_d()+
+  #scale_color_scico_d()+
   scale_x_continuous(breaks = seq(0,10,1))+
   theme(panel.background = element_rect(fill = "white"),
         panel.grid.major.y = element_line(color = "gray79", linetype = 3),
@@ -169,6 +175,8 @@ q4<-
         axis.line.y = element_line(),
         axis.text.x = element_text(family = "Roboto", size = 10),
         axis.text.y = element_text(family = "Roboto", size = 10))+
+  annotate('text',x=5,y=.42,label = "LV Obstruction", family ='Roboto', fontface = 'bold',
+           size = 4.5, hjust = .5)+
   annotate("text", x= .5,y=.35, hjust =0, family = "Roboto",
            label = glue::glue("log rank {surv_pvalue(hf %>%
                 mutate(time1 = t2_obstruction-echo_age0 ) %>%
@@ -189,7 +197,9 @@ q5<-
   ggplot(aes(x=time2, y= strata, label = risk))+
   geom_text(size = 3.5, family = "Roboto")+
   theme_void()+
-  scale_color_scico_d()+
+  scale_color_manual(values = chris_colors_3[2:3])+
+  scale_fill_manual(values = chris_colors_3[2:3])+
+  #  scale_color_scico_d()+
   geom_segment(aes(x= -.3,xend=-.5,y=strata, yend = strata, color = strata), show.legend = F, linewidth=2)+
   annotate("text", x= c(0), y = c(2.6),family = "Roboto", fontface = "bold",
            label = c("Numbers at risk"), hjust = 0, vjust= 0)+
@@ -263,10 +273,12 @@ p1<-
   geom_errorbar(position = position_dodge(width = .3), width = .1)+
   geom_point(position = position_dodge(width = .3), shape = c(21,21,21,21,21,21,21,21,21,21,22,22), size = 4, 
              show.legend = F)+
+  #scale_color_manual(values = chris_colors_3[2:3])+
+  #scale_fill_manual(values = chris_colors_3[2:3])+
   scale_fill_scico_d(palette = "batlow")+
   scale_y_continuous(breaks = seq(0,200,10))+
   coord_cartesian(xlim = c(.6,6.4), ylim = c(-0,trunc(max(dat.df$upper)*1000)+2), expand = F, clip = "off")+
-  annotate("text", x= c(5.17,4.83), y = c(47.241527,39.518524),
+  annotate("text", x= c(5.17,4.83), y = c(dat.df$est[9]*1000,dat.df$est[10]*1000),
            label = c("Sarc+","Sarc-"), hjust = c(0,1), vjust= .5, color = "darkslategrey")+
   labs(#title ="Age-specific incidence of obstruction",
     y= "Age-specific incidence per 1,000 person-years",
@@ -357,7 +369,7 @@ p3<-
   geom_text(family = "Roboto", size =3.5)+ theme_void()+
   coord_cartesian(xlim = c(.6,6.4), ylim = c(.5,1.5), expand = F, clip = "off")+
   annotate("text", x= c(.6), y = c(1.6),family = "Roboto", fontface = "bold",
-           label = c("SIR (CI)"), hjust = 0, vjust= 0)
+           label = c("Standardized incidence ratio (CI)"), hjust = 0, vjust= 0)
 p4<-
   hf %>% 
   mutate(time1 = t2_af-first_encounter_age ) %>% 
@@ -368,8 +380,8 @@ p4<-
   ggplot(aes(x=time, y= estimate, ymin = conf.low, ymax= conf.high, color = strata))+
   geom_line( show.legend=F)+
   geom_ribbon(aes(fill = strata, alpha = .2),show.legend=F)+
-  annotate("text", x= 7.8, y = c(0.12, 0.21), label = c("Sarc+", "Sarc-"),
-           color =scico(2, palette = "batlow", direction = -1), angle= 25,
+  annotate("text", x= 7.8, y = c(0.12, 0.23), label = c("Sarc+", "Sarc-"),
+           color =scico(2, palette = "batlow", direction = -1), angle= 25, size = 6,
            family = "Roboto")+
   
   coord_cartesian(xlim = c(0,10), 
@@ -379,7 +391,8 @@ p4<-
        y = "Cumulative incidence")+
   annotate('text',x=5,y=.27,label = "Atrial Fibrillation", family ='Roboto', fontface = 'bold',
            size = 4.5, hjust = .5)+
-  
+ # scale_color_manual(values = chris_colors_3[2:3])+
+#  scale_fill_manual(values = chris_colors_3[2:3])+
   scale_fill_scico_d()+
   scale_color_scico_d()+
   scale_x_continuous(breaks = seq(0,10,1))+
@@ -413,6 +426,8 @@ p5<-
   ggplot(aes(x=time2, y= strata, label = risk))+
   geom_text(size= 3.5, family = "Roboto")+
   theme_void()+
+  #scale_color_manual(values = chris_colors_3[2:3])+
+  #scale_fill_manual(values = chris_colors_3[2:3])+
   scale_color_scico_d()+
   geom_segment(aes(x= -.3,xend=-.5,y=strata, yend = strata, color = strata), show.legend = F, linewidth=2)+
   annotate("text", x= c(0), y = c(2.6),family = "Roboto", fontface = "bold",
@@ -466,10 +481,12 @@ q1<-
   geom_errorbar(position = position_dodge(width = .3), width = .1)+
   geom_point(position = position_dodge(width = .3), shape = c(21,21,21,21,21,21,21,21,21,21,22,22), size = 4, 
              show.legend = F)+
+  scale_color_manual(values = chris_colors_3[2:3])+
+#  scale_fill_manual(values = chris_colors_3[2:3])+
   scale_fill_scico_d(palette = "batlow")+
   scale_y_continuous(n.breaks = 6)+
   coord_cartesian(xlim = c(.6,6.4), ylim = c(-0,trunc(max(dat.df$upper)*1000)+.1), expand = F, clip = "off")+
-  annotate("text", x= c(5.17,4.83), y = c(dat.df$est[9]*1000,dat.df$est[10]*1000+.1),
+  annotate("text", x= c(5.17,4.83), y = c(dat.df$est[9]*1000,dat.df$est[10]*1000),
            label = c("Sarc+","Sarc-"), hjust = c(0,1), vjust= .5, color= "darkslategrey")+
   labs(#title ="Age-specific incidence of obstruction",
     y= "Age-specific incidence per 1,000 person-years",
@@ -557,7 +574,7 @@ q3<-
   geom_text(family = "Roboto", size = 3.5)+ theme_void()+
   coord_cartesian(xlim = c(.6,6.4), ylim = c(.5,1.5), expand = F, clip = "off")+
   annotate("text", x= c(.6), y = c(1.6),family = "Roboto", fontface = "bold",
-           label = c("SIR (CI)"), hjust = 0, vjust= 0)
+           label = c("Standardized incidence ratio (CI)"), hjust = 0, vjust= 0)
 q4<-
   hf %>% 
   mutate(time1 = t2_vt-first_encounter_age ) %>% 
@@ -568,8 +585,8 @@ q4<-
   ggplot(aes(x=time, y= estimate, ymin = conf.low, ymax= conf.high, color = strata))+
   geom_line( show.legend=F)+
   geom_ribbon(aes(fill = strata, alpha = .2),show.legend=F)+
-  annotate("text", x= 7.8, y = c(0.074, 0.026), label = c("Sarc+", "Sarc-"),
-           color =scico(2, palette = "batlow", direction = -1), angle= 25,
+  annotate("text", x= 7.8, y = c(0.074, 0.020), label = c("Sarc+", "Sarc-"),
+           color =scico(2, palette = "batlow", direction = -1), angle= 25, size = 6,
            family = "Roboto")+
   coord_cartesian(xlim = c(0,10), 
                   ylim= c(0,hf %>% 
@@ -583,6 +600,8 @@ q4<-
        y = "Cumulative incidence")+
   annotate('text',x=5,y=.085,label = "Composite Ventricular Arrhythmias", family ='Roboto', fontface = 'bold',
            size = 4.5, hjust = .5)+
+ # scale_color_manual(values = chris_colors_3[2:3])+
+#  scale_fill_manual(values = chris_colors_3[2:3])+
   scale_fill_scico_d()+
   scale_color_scico_d()+
   scale_x_continuous(breaks = seq(0,10,1))+
@@ -642,6 +661,7 @@ IIIJJJ"
 
 p4+q4+p5+q5+p1+q1+p2+q2+p3+q3+plot_layout(design = layout)+plot_annotation(tag_levels = list(c("A","C","","","B","D")))
 ggsave(filename = "Sup Figure 2 2023Q2.pdf", device = cairo_pdf, height = 22, width = 30, units = "cm", dpi =2900)
+ggsave(filename = "Sup Figure 2 2023Q2.tiff", compression = 'lzw', height = 22, width = 30, units = "cm", dpi =1600)
 
 
 
@@ -890,13 +910,13 @@ dfposneg<- dfposneg %>% mutate(event_hf_death = if_else(death_cause=="Heart Fail
 )
 
 spl <- as_tibble(survSplit(Surv(first_encounter_age, t2_death,
-                                event = event_cv_death)~sarc_status, data = dfposneg %>% filter(t2_death>first_encounter_age),
+                                event = event_death)~sarc_status, data = dfposneg %>% filter(t2_death>first_encounter_age),
                            cut = c(30,45,55,65), 
                            episode = "agegroup")) %>%
   #Calculate time for each age group and event type
   mutate(time = t2_death-first_encounter_age) %>% 
   group_by(agegroup, sarc_status) %>% 
-  summarise(nyear = sum(time), ncas = sum(event_cv_death)) %>% 
+  summarise(nyear = sum(time), ncas = sum(event_death)) %>% 
   ungroup() 
 obs<-matrix(spl$ncas, nrow =2, dimnames = list(c("SARC(+)", "SARC(-)"), c("1",'2','3','4','5')))
 
@@ -1065,7 +1085,7 @@ p3<-
 hf %>% 
   mutate(time1 = t2_death-first_encounter_age ) %>% 
   filter(time1>0) %>% 
-  coxph(Surv(time1, event_cv_death)~sarc_status, data = .)%>% broom::tidy(exponentiate = T, conf.int=T) ->cox_death
+  coxph(Surv(time1, event_death)~sarc_status, data = .)%>% broom::tidy(exponentiate = T, conf.int=T) ->cox_death
 
 hf %>% 
   mutate(time1 = t2_death-first_encounter_age,
@@ -1112,13 +1132,14 @@ p4<-
   hf %>% 
   mutate(time1 = t2_death-first_encounter_age ) %>% 
   filter(time1>0) %>% 
-  surv_fit(Surv(time1, event_cv_death)~sarc_status, data = .) %>% broom::tidy() %>% 
+  surv_fit(Surv(time1, event_death)~sarc_status, data = .) %>% broom::tidy() %>% 
   mutate(across(.cols = c(estimate, conf.low, conf.high), ~1-.x)) %>% 
   ggplot(aes(x=time, y= estimate, ymin = conf.low, ymax= conf.high, color = strata))+
   geom_line( show.legend=F)+
   geom_ribbon(aes(fill = strata, alpha = .2),show.legend=F)+
   coord_cartesian(xlim = c(0,10), 
                   ylim= c(0,.053),
+                  clip = 'off',
                   expand = F)+
   labs(x = "Years from first SHaRe visit",
        y = "Cumulative incidence of cardiovascular death")+
@@ -1135,16 +1156,19 @@ p4<-
         axis.line.y = element_line(),
         axis.text.x = element_text(family = "Helvetica", size = 10),
         axis.text.y = element_text(family = "Helvetica", size = 10))+
+  annotate('text',x=5,y=.052,label = "All-cause Mortality", family ='Roboto', fontface = 'bold',
+           size = 4.5, hjust = .5)+
+  
   annotate("text", x= .5,y=.025, hjust =0, family = "Helvetica",
            label = glue::glue("log rank {surv_pvalue(hf %>% 
                 mutate(time1 = t2_death-first_encounter_age ) %>% 
                 filter(time1>0) %>% 
-                surv_fit(Surv(time1, event_cv_death)~sarc_status, data = .))[,4]}"))
+                surv_fit(Surv(time1, event_death)~sarc_status, data = .))[,4]}"))
 p5<-
   hf %>% 
   mutate(time1 = t2_death-first_encounter_age ) %>% 
   filter(time1>0) %>% 
-  surv_fit(Surv(time1, event_cv_death)~sarc_status, data = .)%>% broom::tidy() %>% 
+  surv_fit(Surv(time1, event_death)~sarc_status, data = .)%>% broom::tidy() %>% 
   mutate(across(.cols = c(estimate, conf.low, conf.high), ~1-.x),
          time2 = trunc(time),
          strata = str_replace(strata, "sarc_status=", "")) %>% 

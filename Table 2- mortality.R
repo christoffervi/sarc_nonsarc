@@ -2,15 +2,24 @@ dfposneg %>%  #filter(fu_lvsd_cmp>=0) %>%
   select(#event_lvef50, 
     #primary_diagnosis_age,
     event_death, 
-    death_cause,sarc_status,#sex
+    death_cause,
+    sarc_status,#sex
   ) %>% 
   mutate(#event_lvef50 = if_else(event_lvef50==1, "LVSD", "No LVSD"),
-    death_cause = case_when(str_detect(death_cause, "Non-Card|Infect|Unkn|Proce|Acci|GI")~"Non-cardiovascular death",
+    death_cause = case_when(
                             str_detect(death_cause, "SCD")~"Sudden cardiac death",
-                            str_detect(death_cause, "Myoca|Cardio|Strok|CAD")~"Other cardiovascular death",
-                            str_detect(death_cause, "Fail|HCM")~"Heart failure",
+                            str_detect(death_cause, "Strok")~"Stroke",
+                            str_detect(death_cause, "Myoca|Other Cardio|Strok|CAD")~"Other cardiovascular death",
+                            str_detect(death_cause, "Fail|HCM|CM-relat|CM-Relat")~"Heart failure",
+                           # death_cause %in% c('CM Procedure: AFib Ablation',)~'HCM procedure-related',
                             T~death_cause),
-    death_cause = fct_infreq(death_cause)) %>% 
+    death_cause = fct_infreq(death_cause),
+    
+    event_hcm_death = if_else(death_cause %in% c("Sudden cardiac death","Heart failure", 'Stroke','HCM procedure-related'),1,0),
+    event_unknown_death = case_when(death_cause=='Not Recorded'~1,T~0),
+    event_cv_death = if_else( death_cause %in% c("Sudden cardiac death","Heart failure", 'Stroke','Other cardiovascular death'),1,0),
+    event_noncv_death = if_else( event_cv_death==0 & event_unknown_death==0 & event_death==1,1,0)
+    ) %>% 
   gtsummary::tbl_summary(by = sarc_status,
                          label = list(#event_srt~"Septal reduction therapy",
                                       #event_vad~"Left ventricular assist device",
@@ -50,6 +59,7 @@ dfposneg %>%  #filter(fu_lvsd_cmp>=0) %>%
   mutate(#event_lvef50 = if_else(event_lvef50==1, "LVSD", "No LVSD"),
     death_cause = case_when(str_detect(death_cause, "Non-Card|Infect|Unkn|Proce|Acci|GI")~"Non-cardiovascular death",
                             str_detect(death_cause, "SCD")~"Sudden cardiac death",
+                            str_detect(death_cause, "Strok")~"Stroke",
                             str_detect(death_cause, "Myoca|Cardio|Strok|CAD")~"Other cardiovascular death",
                             str_detect(death_cause, "Fail|HCM")~"Heart failure",
                             T~death_cause)) %>% 
@@ -89,10 +99,11 @@ library(epiR);library(epitools)
    mutate(#event_lvef50 = if_else(event_lvef50==1, "LVSD", "No LVSD"),
      death_causes = case_when(str_detect(death_cause, "Non-Card|Infect|Unkn|Proce|Acci|GI")~"Non-cardiovascular death",
                               str_detect(death_cause, "SCD")~"Sudden cardiac death",
-                              str_detect(death_cause, "Myoca|Cardio|Strok|CAD")~"Other cardiovascular death",
+                              str_detect(death_cause, "Strok")~"Stroke",
+                              str_detect(death_cause, "Myoca|Cardio|CAD")~"Other cardiovascular death",
                               str_detect(death_cause, "Fail|HCM")~"Heart failure",
                               T~death_cause),
-     event_hcm_death = if_else(death_causes %in% c("Sudden cardiac death","Heart failure"),1,0)) %>% 
+     event_hcm_death = if_else(death_causes %in% c("Sudden cardiac death","Heart failure", 'Stroke'),1,0)) %>% 
    
    janitor::tabyl(sarc_status, event_hcm_death) %>% 
    fisher.test()

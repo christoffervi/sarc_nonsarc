@@ -245,8 +245,8 @@ df<-
                 icd_htn = if_else(age_htn>age_icd,1,0,0),
                 htn_stroke = if_else(age_htn<age_stroke,1,0,0),
                 stroke_htn = if_else(age_htn>age_stroke,1,0,0),
-                htn_hf = if_else(age_htn<age_composite_hf,1,0,0),
-                hf_htn = if_else(age_htn>age_composite_hf,1,0,0),
+            #    htn_hf = if_else(age_htn<age_composite_hf,1,0,0),
+              #  hf_htn = if_else(age_htn>age_composite_hf,1,0,0),
                 htn_obstruction = if_else(age_htn<age_obstruction,1,0,0),
                 obstruction_htn = if_else(age_htn>age_obstruction,1,0,0),
                 htn_syncope = if_else(age_htn<age_syncope,1,0,0),
@@ -266,8 +266,8 @@ df<-
                 icd_obstruction = if_else(age_obstruction>age_icd,1,0,0),
                 obstruction_stroke = if_else(age_obstruction<age_stroke,1,0,0),
                 stroke_obstruction = if_else(age_obstruction>age_stroke,1,0,0),
-                obstruction_hf = if_else(age_obstruction<age_composite_hf,1,0,0),
-                hf_obstruction = if_else(age_obstruction>age_composite_hf,1,0,0),
+            #    obstruction_hf = if_else(age_obstruction<age_composite_hf,1,0,0),
+             #   hf_obstruction = if_else(age_obstruction>age_composite_hf,1,0,0),
                 obstruction_syncope = if_else(age_obstruction<age_syncope,1,0,0),
                 syncope_obstruction = if_else(age_obstruction>age_syncope,1,0,0),
                 obstruction_htxvad = if_else(age_obstruction<age_htxvad,1,0,0),
@@ -283,8 +283,8 @@ df<-
                 icd_af = if_else(age_af>age_icd,1,0,0),
                 af_stroke = if_else(age_af<age_stroke,1,0,0),
                 stroke_af = if_else(age_af>age_stroke,1,0,0),
-                af_hf = if_else(age_af<age_composite_hf,1,0,0),
-                hf_af = if_else(age_af>age_composite_hf,1,0,0),
+             #   af_hf = if_else(age_af<age_composite_hf,1,0,0),
+            #    hf_af = if_else(age_af>age_composite_hf,1,0,0),
                 af_syncope = if_else(age_af<age_syncope,1,0,0),
                 syncope_af = if_else(age_af>age_syncope,1,0,0),
                 af_htxvad = if_else(age_af<age_htxvad,1,0,0),
@@ -298,8 +298,8 @@ df<-
                 icd_srt = if_else(age_srt>age_icd,1,0,0),
                 srt_stroke = if_else(age_srt<age_stroke,1,0,0),
                 stroke_srt = if_else(age_srt>age_stroke,1,0,0),
-                srt_hf = if_else(age_srt<age_composite_hf,1,0,0),
-                hf_srt = if_else(age_srt>age_composite_hf,1,0,0),
+            #    srt_hf = if_else(age_srt<age_composite_hf,1,0,0),
+            #    hf_srt = if_else(age_srt>age_composite_hf,1,0,0),
                 srt_syncope = if_else(age_srt<age_syncope,1,0,0),
                 syncope_srt = if_else(age_srt>age_syncope,1,0,0),
                 srt_htxvad = if_else(age_srt<age_htxvad,1,0,0),
@@ -311,8 +311,8 @@ df<-
                 icd_vt = if_else(age_vt>age_icd,1,0,0),
                 vt_stroke = if_else(age_vt<age_stroke,1,0,0),
                 stroke_vt = if_else(age_vt>age_stroke,1,0,0),
-                vt_hf = if_else(age_vt<age_composite_hf,1,0,0),
-                hf_vt = if_else(age_vt>age_composite_hf,1,0,0),
+           #     vt_hf = if_else(age_vt<age_composite_hf,1,0,0),
+            #    hf_vt = if_else(age_vt>age_composite_hf,1,0,0),
                 vt_syncope = if_else(age_vt<age_syncope,1,0,0),
                 syncope_vt = if_else(age_vt>age_syncope,1,0,0),
                 vt_htxvad = if_else(age_vt<age_htxvad,1,0,0),
@@ -322,8 +322,8 @@ df<-
                 hcm_icd = if_else(age_icd>primary_diagnosis_age,1,0,0),
                 icd_stroke = if_else(age_icd<age_stroke,1,0,0),
                 stroke_icd = if_else(age_icd>age_stroke,1,0,0),
-                icd_hf = if_else(age_icd<age_composite_hf,1,0,0),
-                hf_icd = if_else(age_icd>age_composite_hf,1,0,0),
+             #   icd_hf = if_else(age_icd<age_composite_hf,1,0,0),
+              #  hf_icd = if_else(age_icd>age_composite_hf,1,0,0),
                 icd_syncope = if_else(age_icd<age_syncope,1,0,0),
                 syncope_icd = if_else(age_icd>age_syncope,1,0,0),
                 icd_htxvad = if_else(age_icd<age_htxvad,1,0,0),
@@ -331,20 +331,20 @@ df<-
                 #########
                 stroke_hcm = if_else(age_stroke<primary_diagnosis_age,1,0,0),
                 hcm_stroke = if_else(age_stroke>primary_diagnosis_age,1,0,0),
-                stroke_hf = if_else(age_stroke<age_composite_hf,1,0,0),
-                hf_stroke = if_else(age_stroke>age_composite_hf,1,0,0),
+            #    stroke_hf = if_else(age_stroke<age_composite_hf,1,0,0),
+             #   hf_stroke = if_else(age_stroke>age_composite_hf,1,0,0),
                 stroke_syncope = if_else(age_stroke<age_syncope,1,0,0),
                 syncope_stroke = if_else(age_stroke>age_syncope,1,0,0),
                 stroke_htxvad = if_else(age_stroke<age_htxvad,1,0,0),
                 htxvad_stroke = if_else(age_stroke>age_htxvad,1,0,0),
                 #####
-                hf_hcm = if_else(age_composite_hf<primary_diagnosis_age,1,0,0),
-                hcm_hf = if_else(age_composite_hf>primary_diagnosis_age,1,0,0),
-                hf_syncope = if_else(age_composite_hf<age_syncope,1,0,0),
-                syncope_hf = if_else(age_composite_hf>age_syncope,1,0,0),
-                hf_htxvad = if_else(age_composite_hf<age_htxvad,1,0,0),
-                htxvad_hf = if_else(age_composite_hf>age_htxvad,1,0,0),
-                #####
+                # hf_hcm = if_else(age_composite_hf<primary_diagnosis_age,1,0,0),
+                # hcm_hf = if_else(age_composite_hf>primary_diagnosis_age,1,0,0),
+                # hf_syncope = if_else(age_composite_hf<age_syncope,1,0,0),
+                # syncope_hf = if_else(age_composite_hf>age_syncope,1,0,0),
+                # hf_htxvad = if_else(age_composite_hf<age_htxvad,1,0,0),
+                # htxvad_hf = if_else(age_composite_hf>age_htxvad,1,0,0),
+                # #####
                 syncope_hcm = if_else(age_syncope<primary_diagnosis_age,1,0,0),
                 hcm_syncope = if_else(age_syncope>primary_diagnosis_age,1,0,0),
                 syncope_htxvad = if_else(age_syncope<age_htxvad,1,0,0),
@@ -452,6 +452,18 @@ hf<-
          t2_hf = pmin(t2_lvsd,t2_htxvad, t2_composite_hf, t2_nyha_hf, t2_nyha_hf_systolic, na.rm = T), event_hf = pmax(event_lvsd,event_htxvad, event_composite_hf, event_nyha_hf, event_nyha_hf_systolic,na.rm=T)) 
 
 
+dfposneg<- 
+  dfposneg %>% 
+  mutate(event_hf_death = if_else(death_cause=="Heart Failure",1,0),
+         death_causes = case_when(str_detect(death_cause, "Non-Card|Infect|Unkn|Proce|Acci|GI")~"Non-cardiovascular death",
+                                  str_detect(death_cause, "SCD")~"Sudden cardiac death",
+                                  str_detect(death_cause, "Myoca|Cardio|CAD")~"Other cardiovascular death",
+                                  str_detect(death_cause, "Fail|HCM")~"Heart failure",
+                                  T~death_cause),
+         event_hcm_death = if_else(death_causes %in% c("Sudden cardiac death","Heart failure", "Stroke"),1,0,0),
+         event_cv_death = if_else(death_causes %in% c("Sudden cardiac death","Heart failure", "Stroke", 'Other cardiovascular death'),1,0,0),
+    t2_htx_cv_death = pmin(t2_htxvad, t2_death, na.rm=T),
+         event_htx_cv_death = pmax(event_htxvad, event_cv_death))
 
 
 
@@ -1275,6 +1287,7 @@ pair_df<-
 pairs_df<-
   pairs %>% left_join(pair_df)
 #############
+pairs %>% right_join(pair_df)
 
 
 trio_pos <-

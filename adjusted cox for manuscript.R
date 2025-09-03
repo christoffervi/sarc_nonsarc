@@ -41,3 +41,4 @@ hf %>%
   broom::tidy(exponentiate = T, conf.int=T) 
 
 hf %>% tabyl(sarc_status, event_hcm_death) %>% fisher.test()
+hf
