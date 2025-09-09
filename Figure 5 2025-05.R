@@ -112,7 +112,8 @@ hr_inter_df %>%
          term = str_replace(term, '[(]',""),
          term = str_replace(term, '[)]',"")) %>% 
   right_join(hr_df) %>%
-  filter(term!= 'sex') %>% 
+  filter(term!= 'sex')%>%
+  filter(term!= 'otherMale') %>% 
   mutate(exposure = factor(term),
          .est = estimate,
          .lower = conf.low,

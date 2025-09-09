@@ -804,3 +804,381 @@ chris_hr_time_double_event_bidirection <- function(data, id, start,
       )
   }
 }
+
+
+
+
+#################################
+# The functions with an additional time-varying covariate
+
+
+
+chris_hr_time <- function(data, id, start, time1, event1, time2, event2, 
+                          
+                          type = "fu", other = sex,
+                          t2_srt = NULL, event_srt = NULL) {
+  
+  # Convert input parameters to quosures
+  id <- enquo(id)
+  start <- enquo(start)
+  event1 <- enquo(event1)
+  event2 <- enquo(event2)
+  time1 <- enquo(time1)
+  time2 <- enquo(time2)
+  other <- enquo(other)
+  
+  # Optional time-varying covariate
+  t2_srt_q <- enquo(t2_srt)
+  event_srt_q <- enquo(event_srt)
+  
+  # Convert labels
+  name1 <- as_label(event1)
+  name2 <- as_label(event2)
+  name_srt <- as_label(event_srt_q)
+  
+  # Build base data with optional columns
+  data <- {{data}} %>%
+    dplyr::select(
+      id = !!id,
+      start = !!start,
+      event1 = !!event1,
+      time1 = !!time1,
+      event2 = !!event2,
+      time2 = !!time2,
+      stop = !!time2,
+      other = !!other,
+      t2_srt = !!t2_srt_q,
+      event_srt = !!event_srt_q
+    )
+  
+  df <- data %>% filter(time2 > start)
+  
+  # First tmerge with first time-varying covariate
+  df_new <- survival::tmerge(df, df, id,
+                             var = tdc(time1, event1, 0),
+                             event = event(time2, event2),
+                             tstop = time2,
+                             tstart = start)
+  
+  # Add second time-varying covariate if supplied
+  if (!missing(t2_srt) && !missing(event_srt)) {
+    df_new <- survival::tmerge(df_new, df, id,
+                               var2 = tdc(t2_srt, event_srt, 0))
+  }
+  
+  # Add follow-up intervals
+  df_new <- df_new %>%
+    mutate(
+      fu = tstop - tstart,
+      fu_begin = tstart - start,
+      fu_end = tstop - start
+    )
+  
+  # Build model formula depending on presence of second covariate
+  if (!missing(t2_srt) && !missing(event_srt)) {
+    formula <- as.formula(Surv(fu_begin, fu_end, event) ~ var + var2 + other)
+    formula_full <- as.formula(Surv(tstart, tstop, event) ~ var + var2 + other)
+  } else {
+    formula <- as.formula(Surv(fu_begin, fu_end, event) ~ var + other)
+    formula_full <- as.formula(Surv(tstart, tstop, event) ~ var + other)
+  }
+  
+  # Run Cox model
+  model <- if (type == "fu") {
+    coxph(formula, data = df_new)
+  } else {
+    coxph(formula_full, data = df_new)
+  }
+  
+  # Return tidy summary
+  broom::tidy(model, exponentiate = TRUE, conf.int = TRUE) %>%
+    mutate(
+      term = case_when(
+        term == "var" ~ str_replace(name1, "event_", ""),
+        term == "var2" ~ str_replace(name_srt, "event_", ""),
+        TRUE ~ as.character(term)
+      ),
+      outcome = str_replace(name2, "event_", "")
+    )
+}
+
+
+
+
+###############
+
+
+chris_hr_time_interaction <- function(data, id, start, 
+                                      time1, event1, 
+                                      time2, event2, 
+                                      interaction, 
+                                      type = "fu",
+                                      interaction_term = TRUE,
+                                      other = sex,
+                                      t2_srt = NULL, event_srt = NULL) {
+  
+  # Convert input parameters to quosures
+  id <- enquo(id)
+  start <- enquo(start)
+  event1 <- enquo(event1)
+  event2 <- enquo(event2)
+  time1 <- enquo(time1)
+  time2 <- enquo(time2)
+  interaction <- enquo(interaction)
+  other <- enquo(other)
+  
+  t2_srt_q <- enquo(t2_srt)
+  event_srt_q <- enquo(event_srt)
+  
+  # Labels
+  name1 <- as_label(event1)
+  name2 <- as_label(event2)
+  name_srt <- as_label(event_srt_q)
+  
+  # Select relevant variables
+  data <- {{data}} %>%
+    dplyr::select(
+      id = !!id,
+      start = !!start,
+      event1 = !!event1,
+      time1 = !!time1,
+      event2 = !!event2,
+      time2 = !!time2,
+      stop = !!time2,
+      interaction = !!interaction,
+      other = !!other,
+      t2_srt = !!t2_srt_q,
+      event_srt = !!event_srt_q
+    )
+  
+  df <- data %>% filter(time2 > start)
+  
+  df_new <- survival::tmerge(df, df, id,
+                             var = tdc(time1, event1, 0),
+                             event = event(time2, event2),
+                             tstop = time2,
+                             tstart = start)
+  
+  # Add second time-varying covariate if present
+  if (!missing(t2_srt) && !missing(event_srt)) {
+    df_new <- survival::tmerge(df_new, df, id,
+                               var2 = tdc(t2_srt, event_srt, 0))
+  }
+  
+  df_new <- df_new %>%
+    mutate(
+      fu = tstop - tstart,
+      fu_begin = tstart - start,
+      fu_end = tstop - start
+    )
+  
+  # Build formula
+  if (!missing(t2_srt) && !missing(event_srt)) {
+    base_formula <- if (interaction_term) {
+      ~ var * interaction + var2 + other
+    } else {
+      ~ var + var2 + var:interaction + other
+    }
+  } else {
+    base_formula <- if (interaction_term) {
+      ~ var * interaction + other
+    } else {
+      ~ var + var:interaction + other
+    }
+  }
+  
+  # Fit model
+  model <- if (type == "fu") {
+    coxph(update(base_formula, Surv(fu_begin, fu_end, event) ~ .), data = df_new)
+  } else {
+    coxph(update(base_formula, Surv(tstart, tstop, event) ~ .), data = df_new)
+  }
+  
+  broom::tidy(model, exponentiate = TRUE, conf.int = TRUE) %>%
+    mutate(
+      term = str_replace_all(term, c("var" = name1, "event_" = "", "interaction" = "")),
+      outcome = str_replace(name2, "event_", "")
+    )
+}
+
+
+
+
+
+#########
+chris_hr_time_strata <- function(data, id, start, 
+                                 time1, event1, 
+                                 time2, event2, 
+                                 group, 
+                                 type = "fu", other = sex,
+                                 t2_srt = NULL, event_srt = NULL) {
+  
+  # Convert input parameters to quosures
+  id <- enquo(id)
+  start <- enquo(start)
+  event1 <- enquo(event1)
+  event2 <- enquo(event2)
+  time1 <- enquo(time1)
+  time2 <- enquo(time2)
+  group <- enquo(group)
+  other <- enquo(other)
+  
+  t2_srt_q <- enquo(t2_srt)
+  event_srt_q <- enquo(event_srt)
+  
+  # Convert to labels
+  name1 <- as_label(event1)
+  name2 <- as_label(event2)
+  name_srt <- as_label(event_srt_q)
+  
+  # Select relevant variables
+  data <- {{data}} %>%
+    dplyr::select(
+      id = !!id,
+      start = !!start,
+      event1 = !!event1,
+      time1 = !!time1,
+      event2 = !!event2,
+      time2 = !!time2,
+      stop = !!time2,
+      group = !!group,
+      other = !!other,
+      t2_srt = !!t2_srt_q,
+      event_srt = !!event_srt_q
+    )
+  
+  df <- data %>% filter(time2 > start)
+  
+  df_new <- survival::tmerge(df, df, id,
+                             var = tdc(time1, event1, 0),
+                             event = event(time2, event2),
+                             tstop = time2,
+                             tstart = start)
+  
+  # Add second time-varying covariate if supplied
+  if (!missing(t2_srt) && !missing(event_srt)) {
+    df_new <- survival::tmerge(df_new, df, id,
+                               var2 = tdc(t2_srt, event_srt, 0))
+  }
+  
+  df_new <- df_new %>%
+    mutate(
+      fu = tstop - tstart,
+      fu_begin = tstart - start,
+      fu_end = tstop - start
+    )
+  
+  # Build formula
+  if (!missing(t2_srt) && !missing(event_srt)) {
+    base_formula <- ~ var + var2 + strata(group) + other
+  } else {
+    base_formula <- ~ var + strata(group) + other
+  }
+  
+  # Run model
+  model <- if (type == "fu") {
+    coxph(update(base_formula, Surv(fu_begin, fu_end, event) ~ .), data = df_new)
+  } else {
+    coxph(update(base_formula, Surv(tstart, tstop, event) ~ .), data = df_new)
+  }
+  
+  # Format output
+  broom::tidy(model, exponentiate = TRUE, conf.int = TRUE) %>%
+    mutate(
+      term = str_replace_all(term, c("var" = name1, "event_" = "", "strata" = "")),
+      outcome = str_replace(name2, "event_", "")
+    )
+}
+
+##################
+
+chris_hr_time_interaction2srt <- function(data, id, start, 
+                                       time1, event1, 
+                                       time2, event2, 
+                                       interaction, 
+                                       type = "fu",
+                                       interaction_term = TRUE,
+                                       other = sex,
+                                       t2_srt = t2_srt, event_srt = event_srt) {
+  
+  # Convert inputs to quosures
+  id <- enquo(id)
+  start <- enquo(start)
+  event1 <- enquo(event1)
+  event2 <- enquo(event2)
+  time1 <- enquo(time1)
+  time2 <- enquo(time2)
+  interaction <- enquo(interaction)
+  other <- enquo(other)
+  
+  t2_srt_q <- enquo(t2_srt)
+  event_srt_q <- enquo(event_srt)
+  
+  # Labels
+  name1 <- as_label(event1)
+  name2 <- as_label(event2)
+  name_srt <- as_label(event_srt_q)
+  
+  # Select relevant columns
+  data <- {{data}} %>%
+    dplyr::select(
+      id = !!id,
+      start = !!start,
+      event1 = !!event1,
+      time1 = !!time1,
+      event2 = !!event2,
+      time2 = !!time2,
+      stop = !!time2,
+      interaction = !!interaction,
+      other = !!other,
+      t2_srt = !!t2_srt_q,
+      event_srt = !!event_srt_q
+    )
+  
+  df <- data %>% filter(time2 > start)
+  
+  # First tmerge
+  df_new <- survival::tmerge(df, df, id,
+                             var = tdc(time1, event1, 0),
+                             event = event(time2, event2),
+                             tstop = time2,
+                             tstart = start)
+  
+  # Add second time-varying covariate if provided
+  if (!missing(t2_srt) && !missing(event_srt)) {
+    df_new <- survival::tmerge(df_new, df, id,
+                               var2 = tdc(t2_srt, event_srt, 0))
+  }
+  
+  df_new <- df_new %>%
+    mutate(
+      fu = tstop - tstart,
+      fu_begin = tstart - start,
+      fu_end = tstop - start
+    )
+  
+  # Build formula
+  if (!missing(t2_srt) && !missing(event_srt)) {
+    base_formula <- if (interaction_term) {
+      ~ var:interaction + var2 + other
+    } else {
+      ~ var:interaction + var2 + other
+    }
+  } else {
+    base_formula <- ~ var:interaction + other
+  }
+  
+  # Fit model
+  model <- if (type == "fu") {
+    coxph(update(base_formula, Surv(fu_begin, fu_end, event) ~ .), data = df_new)
+  } else {
+    coxph(update(base_formula, Surv(tstart, tstop, event) ~ .), data = df_new)
+  }
+  
+  # Tidy output
+  broom::tidy(model, exponentiate = TRUE, conf.int = TRUE) %>%
+    mutate(
+      term = str_replace_all(term, c("var" = name1, "event_" = "", "interaction" = "")),
+      outcome = str_replace(name2, "event_", "")
+    )
+}
