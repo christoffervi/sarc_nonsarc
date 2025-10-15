@@ -4,8 +4,16 @@ library(tidyverse); library(gt); library(gtsummary); library(flextable)
  dfposneg<- df %>%  filter(sarc_status %in% c("SARC(+)","SARC(-)"#,"SARC(U)"
  ))
  dfposneg %>% #filter(primary_diagnosis_age<18) %>% 
+   mutate(diabetes = case_when(event_diabetes==1 & t2_diabetes<= first_encounter_age~'Yes',
+                               T~'No'),
+          cad = case_when(event_cad==1 & t2_cad<= first_encounter_age~'Yes',
+                               T~'No'),
+          mi = case_when(event_mi==1 & t2_mi<= first_encounter_age~'Yes',
+                          T~'No')) %>% 
    select(sex, primary_diagnosis_age, f_hx_scd_esc,#echo_septal_morphologyx,
           first_encounter_age, is_proband,
+          diabetes,
+          cad, mi,
           race, 
           sarc_status,sysbp,diabp,bmi,obese,bsa,nyha,lge,cmri_lge_percent0, cmri_lvef0,cmri_lv_mass0,cmri_max_lvt0,
           
@@ -46,7 +54,7 @@ library(tidyverse); library(gt); library(gtsummary); library(flextable)
                                        race~"Race")) %>% gtsummary::add_p() %>% 
    gtsummary::bold_labels() #%>% #add_overall() 
  as_gt()  #%>% gtsave("vuf.rtf")
- 
+ dfposneg$event_cad
  
  #################
  dfposneg %>% filter(is_pediatric==T) %>% 
@@ -178,6 +186,35 @@ library(tidyverse); library(gt); library(gtsummary); library(flextable)
                                        event_transplant~"Cardiac transplantation",
                                        event_death~"All-cause mortality",
                                        death_cause~"Causes of death"
+                                       #             primary_diagnosis_age~"Age at HCM diagnosis"
+                          )
+   ) %>% 
+   gtsummary::bold_labels() %>% gtsummary::add_p() #%>% gtsummary::as_gt() %>% gtsave("death.png")
+ 
+ 
+ 
+ 
+ ###########
+ 
+ dfposneg %>%  #filter(fu_lvsd_cmp>=0) %>% 
+   mutate(diabetes = case_when(t2_diabetes<=first_encounter_age&event_diabetes==1~1,T~0),
+          cad = case_when(t2_cad<=first_encounter_age&event_cad==1~1,T~0),
+          mi = case_when(t2_mi<=first_encounter_age&event_mi==1~1,T~0),) %>% 
+   select(
+     sarc_status,#event_lvef50, sa
+     #primary_diagnosis_age,
+     event_cad,
+     event_diabetes,
+     event_mi,
+     mi,
+     cad,
+     diabetes
+   ) %>% 
+   
+   gtsummary::tbl_summary(by = 
+                            sarc_status,
+                          label = list(event_cad~"Ischemic heart disease -event",
+                                       event_diabetes~"Diabetes -event"
                                        #             primary_diagnosis_age~"Age at HCM diagnosis"
                           )
    ) %>% 

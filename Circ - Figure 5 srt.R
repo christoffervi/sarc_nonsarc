@@ -45,10 +45,10 @@ hr_df<-
     chris_hr_time(dfposneg, pid, echo_age0, t2_lvsd, event_lvsd, t2_vt, event_vt, 'age',t2_srt = t2_srt, event_srt = event_srt),
     chris_hr_time(dfposneg, pid, echo_age0, t2_lvsd, event_lvsd, t2_stroke, event_stroke, 'age',t2_srt = t2_srt, event_srt = event_srt),
     chris_hr_time_strata(dfposneg, pid, echo_age0, t2_lvsd, event_lvsd, t2_death, event_death,sarc_status, 'age',t2_srt = t2_srt, event_srt = event_srt),
-    chris_hr_time(dfposneg, pid, echo_age0, t2_lvsd, event_lvsd, t2_htxvad, event_htxvad, 'age',t2_srt = t2_srt, event_srt = event_srt),
+    chris_hr_time(dfposneg, pid, echo_age0, t2_lvsd, event_lvsd, t2_htxvad, event_htxvad, 'age',t2_srt = t2_srt, event_srt = event_srt)
     
-    chris_hr_time(dfposneg, pid, first_encounter_age, t2_af, event_af, t2_htx_cv_death, event_htx_cv_death, 'age',t2_srt = t2_srt, event_srt = event_srt),
-    chris_hr_time(dfposneg, pid, echo_age0, t2_lvsd, event_lvsd, t2_htx_cv_death, event_htx_cv_death, 'age',t2_srt = t2_srt, event_srt = event_srt)
+##    chris_hr_time(dfposneg, pid, first_encounter_age, t2_af, event_af, t2_htx_cv_death, event_htx_cv_death, 'age',t2_srt = t2_srt, event_srt = event_srt),
+#  chris_hr_time(dfposneg, pid, echo_age0, t2_lvsd, event_lvsd, t2_htx_cv_death, event_htx_cv_death, 'age',t2_srt = t2_srt, event_srt = event_srt)
     
   )
 
@@ -198,3 +198,5 @@ fig3_df %>%
         legend.position = "bottom",
         # panel.border = element_rect(color = "black")
   )
+
+ggsave(filename = 'Circ - Figure 5.pdf', device = cairo_pdf , height = 15, width = 20, units = "cm", dpi =1000)

@@ -45,6 +45,8 @@ dat.df <- spl %>% select(ncas,nyear) %>%
 
 dat.df
 
+col_chris <- scale_color_manual(values = c("#001959", '#CC79A7'))
+fill_chris <- scale_fill_manual(values = c("#001959", '#CC79A7'))
 q1<-
   dat.df %>% filter(!is.na(sarc_status)) %>%
   mutate(age = factor(agegroup, labels = c("<30", "31-45", "46-55", "56-65", "&gt;65", "**ASI**")),
@@ -58,7 +60,8 @@ q1<-
   geom_point(position = position_dodge(width = .3), shape = c(21,21,21,21,21,21,21,21,21,21,22,22), size = 4,
              show.legend = F)+
   #scale_fill_manual(values = chris_colors_3[2:3])+ 
-  scale_fill_scico_d(palette = "batlow")+
+  fill_chris+
+  #scale_fill_scico_d(palette = "batlow")+
   scale_y_continuous(n.breaks = 6)+
   #scale_y_log10()+
   coord_cartesian(xlim = c(.6,6.4), ylim = c(-0,
@@ -135,7 +138,8 @@ q2<-
   geom_text(aes(label = round(nyear,0)), size = 3.5,
             show.legend = F,family = "Roboto")+
   #scale_color_manual(values = chris_colors_3[2:3])+ 
-  scale_color_scico_d(palette = "batlow")+
+  col_chris+
+  #scale_color_scico_d(palette = "batlow")+
   coord_cartesian(xlim = c(.6,6.4), ylim = c(0,2.4), expand = F, clip = "off")+
   geom_segment(aes(x= .7,xend=.8,y=sarc_status, yend = sarc_status, color = sarc_status), show.legend = F, linewidth=2)+
   annotate("text", x= c(.6), y = c(2.6),family = "Roboto", fontface = "bold",
@@ -174,7 +178,10 @@ q4<-
   #           family = "Roboto")+
   annotate("text", x= 7.8, y = c( 0.0125,0.035), label = c("Sarc-", "Sarc+"),
            color = 
-             c(  scico(1, palette = "batlow", direction = 1),'#f77ef7'),
+             c(  scico(1, palette = "batlow", direction = 1),
+                 '#CC79A7'
+#                 '#f77ef7'
+                 ),
            
           #   scico(2, palette = "batlow", direction = 1)),
            angle= 20,
@@ -192,9 +199,10 @@ q4<-
   annotate("text", family = "Roboto", size = 4, fontface = "bold",
            hjust = .5, x=5, y= .0525, label = "HCM-related Death")+
   #scale_fill_manual(values = chris_colors_3[2:3])+ 
-  scale_color_scico_d()+
+  col_chris+fill_chris+
+  #scale_color_scico_d()+scale_fill_scico_d(palette = "batlow")+
   #scale_color_manual(values = chris_colors_3[2:3])+ 
-  scale_fill_scico_d(palette = "batlow")+
+  
   scale_x_continuous(breaks = seq(0,10,1))+
   theme(panel.background = element_rect(fill = "white"),
         panel.grid.major.y = element_line(color = "gray79", linetype = 3),
@@ -228,7 +236,8 @@ q5<-
   geom_text(size = 3.5, family = "Roboto")+
   theme_void()+
   #scale_color_manual(values = chris_colors_3[2:3])+ 
-  scale_color_scico_d()+
+  col_chris+
+  #scale_color_scico_d()+
   geom_segment(aes(x= -.3,xend=-.5,y=strata, yend = strata, color = strata), show.legend = F, linewidth=2)+
   annotate("text", x= c(0), y = c(2.6),family = "Roboto", fontface = "bold",
            label = c("Numbers at risk"), hjust = 0, vjust= 0)+
@@ -252,7 +261,14 @@ CCC
 DDD
 EEE"
 
-
+q4+q5
 q4+q5+q1+q2+q3+plot_layout(design = layout)+plot_annotation(tag_levels = list(c("A","","B","","","")))
 
 ggsave(filename = "Figure 3 - 2025-03-06.tiff", compression = 'lzw', height = 22, width = 16, units = "cm", dpi =2000)
+
+
+
+q4
+
+
+glm(event_hcm_death~sarc_status, data = dfposneg, family = 'binomial') %>% tidy(exponentiate =T, conf.int=T)

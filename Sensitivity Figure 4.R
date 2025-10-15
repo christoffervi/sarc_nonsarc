@@ -139,8 +139,8 @@ df_surv %>% arrange(time) %>%
         axis.text = element_markdown(family = "Roboto", color = "black"),
         axis.title = element_markdown(family = "Roboto", color = "black"),
         panel.grid.major.y= element_line(color = "gray79", linetype=3))
-ggsave(filename = 'Figure 4.pdf', device = cairo_pdf , height = 12, width = 14, units = "cm", dpi =2000)
-ggsave(filename = 'Figure 4.tiff', compression = 'lzw' , height = 12, width = 16, units = "cm", dpi =2000)
+ggsave(filename = 'Figure S3.pdf', device = cairo_pdf , height = 12, width = 14, units = "cm", dpi =2000)
+ggsave(filename = 'Figure S3.tiff', compression = 'lzw' , height = 12, width = 16, units = "cm", dpi =2000)
 ggplotly()
 
 # Figure X. Survival curves and restricted mean survival time (RMST) difference between sarcomeric and non-sarcomeric HCM.

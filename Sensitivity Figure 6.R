@@ -28,11 +28,12 @@ fig4_df<-
     
     # LVSD
     #  chris_hr_time_interaction2(dfposnegproband, pid, echo_age0, t2_lvsd, event_lvsd, t2_obstruction, event_obstruction,sarc_status, 'age', F),
-    chris_hr_time_interaction2(dfposnegproband, pid, first_encounter_age, t2_lvsd, event_lvsd, t2_nyha_hf, event_nyha_hf,sarc_status, 'age', F),
-    chris_hr_time_interaction2(dfposnegproband, pid, first_encounter_age, t2_lvsd, event_lvsd, t2_vt, event_vt,sarc_status, 'age', F),
+    chris_hr_time_interaction2(dfposnegproband, pid, echo_age0, t2_lvsd, event_lvsd, t2_af, event_af,sarc_status, 'age', F),
+    chris_hr_time_interaction2(dfposnegproband, pid, echo_age0, t2_lvsd, event_lvsd, t2_nyha_hf, event_nyha_hf,sarc_status, 'age', F),
+    chris_hr_time_interaction2(dfposnegproband, pid, echo_age0, t2_lvsd, event_lvsd, t2_vt, event_vt,sarc_status, 'age', F),
     #    chris_hr_time_interaction2(dfposnegproband, pid, first_encounter_age, t2_lvsd, event_lvsd, t2_stroke, event_stroke,sarc_status, 'age', F),
-    chris_hr_time_interaction2(dfposnegproband, pid, first_encounter_age, t2_lvsd, event_lvsd, t2_htxvad, event_htxvad,sarc_status, 'age', F),
-    chris_hr_time_interaction2(dfposnegproband, pid, first_encounter_age, t2_lvsd, event_lvsd, t2_death, event_death,sarc_status, 'age', F)
+    chris_hr_time_interaction2(dfposnegproband, pid, echo_age0, t2_lvsd, event_lvsd, t2_htxvad, event_htxvad,sarc_status, 'age', F),
+    chris_hr_time_interaction2(dfposnegproband, pid, echo_age0, t2_lvsd, event_lvsd, t2_death, event_death,sarc_status, 'age', F)
   ) %>%
   separate(term, c('term', 'sarc'), ":") %>%
   filter(!is.na(sarc)) %>%
@@ -47,13 +48,13 @@ fig4_df<-
     
     rbind(
       #Obesity
-      chris_hr_time_interaction(dfposnegproband, pid, echo_age0, t2_obesity, event_obesity, t2_obstruction, event_obstruction,sarc_status, 'age', F),
+     # chris_hr_time_interaction(dfposnegproband, pid, echo_age0, t2_obesity, event_obesity, t2_obstruction, event_obstruction,sarc_status, 'age', F),
       chris_hr_time_interaction(dfposnegproband, pid, first_encounter_age, t2_obesity, event_obesity, t2_nyha_hf, event_nyha_hf,sarc_status, 'age', F),
       chris_hr_time_interaction(dfposnegproband, pid, first_encounter_age, t2_obesity, event_obesity, t2_af, event_af,sarc_status, 'age', F),
       #  chris_hr_time_interaction(dfposnegproband, pid, first_encounter_age, t2_obesity, event_obesity, t2_death, event_death,sarc_status, 'age', F),
       
       #Hypertension
-      chris_hr_time_interaction(dfposnegproband, pid, echo_age0, t2_htn, event_htn, t2_obstruction, event_obstruction,sarc_status, 'age', F),
+      #chris_hr_time_interaction(dfposnegproband, pid, echo_age0, t2_htn, event_htn, t2_obstruction, event_obstruction,sarc_status, 'age', F),
       #  chris_hr_time_interaction(dfposnegproband, pid, first_encounter_age, t2_htn, event_htn, t2_af, event_af,sarc_status, 'age', F),
       
       # LV Obstruction
@@ -73,11 +74,12 @@ fig4_df<-
       
       # LVSD
       #  chris_hr_time_interaction2(dfposnegproband, pid, echo_age0, t2_lvsd, event_lvsd, t2_obstruction, event_obstruction,sarc_status, 'age', F),
-      chris_hr_time_interaction(dfposnegproband, pid, first_encounter_age, t2_lvsd, event_lvsd, t2_nyha_hf, event_nyha_hf,sarc_status, 'age', F),
-      chris_hr_time_interaction(dfposnegproband, pid, first_encounter_age, t2_lvsd, event_lvsd, t2_vt, event_vt,sarc_status, 'age', F),
+      chris_hr_time_interaction(dfposnegproband, pid, echo_age0, t2_lvsd, event_lvsd, t2_af, event_af,sarc_status, 'age', F),
+      chris_hr_time_interaction(dfposnegproband, pid, echo_age0, t2_lvsd, event_lvsd, t2_nyha_hf, event_nyha_hf,sarc_status, 'age', F),
+      chris_hr_time_interaction(dfposnegproband, pid, echo_age0, t2_lvsd, event_lvsd, t2_vt, event_vt,sarc_status, 'age', F),
       #      chris_hr_time_interaction(dfposnegproband, pid, first_encounter_age, t2_lvsd, event_lvsd, t2_stroke, event_stroke,sarc_status, 'age', F),
-      chris_hr_time_interaction(dfposnegproband, pid, first_encounter_age, t2_lvsd, event_lvsd, t2_htxvad, event_htxvad,sarc_status, 'age', F),
-      chris_hr_time_interaction(dfposnegproband, pid, first_encounter_age, t2_lvsd, event_lvsd, t2_death, event_death,sarc_status, 'age', F)
+      chris_hr_time_interaction(dfposnegproband, pid, echo_age0, t2_lvsd, event_lvsd, t2_htxvad, event_htxvad,sarc_status, 'age', F),
+      chris_hr_time_interaction(dfposnegproband, pid, echo_age0, t2_lvsd, event_lvsd, t2_death, event_death,sarc_status, 'age', F)
     ) %>%
       filter(str_detect(term, ":")) %>%
       separate(term, c("term", "vuf")) %>%

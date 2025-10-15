@@ -83,7 +83,7 @@ bootstrap_rmst <- function(data, group_var, B = 1000, tau = 85.1, from_age = age
 }
 
 # Run it
-results <- bootstrap_rmst(df_rmst, group_var = "sarc_status", B = 100, tau = 85.1, from_age = age_from)
+results <- bootstrap_rmst(df_rmst, group_var = "sarc_status", B = 1000, tau = 85.1, from_age = age_from)
 
 results$by_group  # RMST by group with CI
 results$diff      # RMST difference with CI
